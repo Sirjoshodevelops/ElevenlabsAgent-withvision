@@ -63,6 +63,12 @@ body {
     }
 }
 
+@layer utilities {
+    .bg-gradient-radial {
+        background: radial-gradient(var(--tw-gradient-stops));
+    }
+}
+
 @layer base {
     * {
         @apply border-border;
