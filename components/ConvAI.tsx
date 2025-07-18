@@ -272,7 +272,7 @@ export function ConvAI() {
             ></div>
 
             <Button
-              variant={"outline"}
+              variant={"default"}
               className={"rounded-full"}
               size={"lg"}
               disabled={
@@ -293,7 +293,7 @@ export function ConvAI() {
             </Button>
             
             <div className="border-t pt-4 mt-4">
-              <p className="text-sm text-gray-600 mb-2 text-center">Share Your Screen with the Agent</p>
+              <p className="text-sm text-muted-foreground mb-2 text-center">Share Your Screen with the Agent</p>
               {!isScreenSharing ? (
                 <Button
                   variant={"secondary"}

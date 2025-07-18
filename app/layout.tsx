@@ -1,51 +1,39 @@
 import type {Metadata} from "next";
 import "./globals.css";
 import {BackgroundWave} from "@/components/background-wave";
-import Link from "next/link";
-import {ElevenLabsLogo, GithubLogo} from "@/components/logos";
+import {ThemeProvider} from "@/components/theme-provider";
+import {ThemeToggle} from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
-    title: "ConvAI",
+    title: "Voice AI Assistant",
 };
 
 export default function RootLayout({children}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className={"h-full w-full"}>
         <body className={`antialiased w-full h-full lex flex-col`}>
-        <div className="flex flex-col flex-grow w-full items-center justify-center sm:px-4">
-            <nav
-                className={
-                    "sm:fixed w-full top-0 left-0 grid grid-cols-2 py-4 px-8"
-                }
-            >
-                <div className={"flex items-center gap-2"}>
-                    <Link href={"/"} prefetch={true} className="flex items-center gap-2">
-                        <ElevenLabsLogo
-                            className={"h-[15px] w-auto hover:text-gray-500"}
-                        />
-                        <span className="text-[15px] font-medium text-gray-700 hover:text-gray-500 leading-[15px]">
-                            x YeyuLab
-                        </span>
-                    </Link>
-                </div>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <div className="flex flex-col flex-grow w-full items-center justify-center sm:px-4">
+                <nav className="sm:fixed w-full top-0 left-0 flex justify-between items-center py-4 px-8">
+                    <div className="flex items-center gap-2">
+                        <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
+                            Voice AI Assistant
+                        </h1>
+                    </div>
 
-                <div className={"flex gap-4 justify-end"}>
-                    <Link
-                        href="https://github.com/jonatanvm/convai-demo"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={"py-0.5"}
-                        aria-label="View source on GitHub"
-                    >
-                        <GithubLogo
-                            className={"w-5 h-5 hover:text-gray-500 text-[#24292f]"}
-                        />
-                    </Link>
-                </div>
-            </nav>
-            {children}
-            <BackgroundWave/>
-        </div>
+                    <div className="flex gap-4 justify-end">
+                        <ThemeToggle />
+                    </div>
+                </nav>
+                {children}
+                <BackgroundWave/>
+            </div>
+        </ThemeProvider>
         </body>
         </html>
     );
