@@ -9,7 +9,7 @@ export const BackgroundWave = () => {
         autoPlay
         muted
         loop
-        controls={false}
+      className="fixed object-cover bottom-0 z-[1] hidden md:block pointer-events-none opacity-60 dark:opacity-40"
         className="absolute object-cover w-full h-full opacity-60 dark:opacity-40"
         style={{
           filter: 'hue-rotate(280deg) saturate(2.5) brightness(0.4) contrast(1.8)',
