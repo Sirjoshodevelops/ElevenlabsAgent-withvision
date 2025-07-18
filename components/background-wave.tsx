@@ -15,7 +15,7 @@ export const BackgroundWave = () => {
         loop
         className="fixed object-cover bottom-0 z-[1] w-full h-full hidden md:block pointer-events-none opacity-95"
         style={{
-          filter: 'hue-rotate(200deg) saturate(3) brightness(1.2) contrast(1.5) blur(0px)',
+          filter: 'hue-rotate(280deg) saturate(3) brightness(1.2) contrast(1.5)',
           boxShadow: '0 0 120px rgba(147, 51, 234, 0.4), 0 0 240px rgba(168, 85, 247, 0.3)',
           imageRendering: 'optimizeQuality',
           transform: 'scale(1.01)',
