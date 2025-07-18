@@ -82,80 +82,178 @@ body {
 
 /* Orb Styling */
 .orb {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(0, 255, 255, 0.3);
 }
 
 .animate-orb {
-    animation: wave 0.4s infinite ease-in-out;
+    animation: pulse-active 0.6s infinite ease-in-out, glow-active 2s infinite ease-in-out;
 }
 
 .animate-orb-slow {
-    animation: wave 2s infinite ease-in-out;
+    animation: pulse-idle 3s infinite ease-in-out, glow-idle 4s infinite ease-in-out;
 }
 
 .orb-active {
-    background: radial-gradient(circle at center, #a855f7, #7c3aed, #5b21b6);
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(0, 255, 255, 0.8) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(255, 0, 255, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at center, rgba(0, 150, 255, 0.9) 0%, rgba(0, 100, 200, 0.7) 40%, rgba(0, 50, 150, 0.5) 100%);
+    box-shadow: 
+        0 0 60px rgba(0, 255, 255, 0.8),
+        0 0 120px rgba(0, 150, 255, 0.6),
+        inset 0 0 40px rgba(255, 255, 255, 0.2);
 }
 
 .orb-inactive {
-    background: radial-gradient(circle at center,
-    rgba(168, 85, 247, 0.3),
-    rgba(124, 58, 237, 0.2),
-    rgba(91, 33, 182, 0.1));
+    background: 
+        radial-gradient(circle at center, rgba(0, 150, 255, 0.4) 0%, rgba(0, 100, 200, 0.3) 40%, rgba(0, 50, 150, 0.2) 100%);
+    box-shadow: 
+        0 0 30px rgba(0, 150, 255, 0.4),
+        0 0 60px rgba(0, 100, 200, 0.3);
 }
 
 .dark .orb-active {
-    background: radial-gradient(circle at center, #8b5cf6, #7c3aed, #6d28d9);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(0, 255, 255, 0.9) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(255, 0, 255, 0.7) 0%, transparent 50%),
+        radial-gradient(circle at center, rgba(0, 200, 255, 1) 0%, rgba(0, 150, 255, 0.8) 40%, rgba(0, 100, 200, 0.6) 100%);
+    box-shadow: 
+        0 0 80px rgba(0, 255, 255, 1),
+        0 0 160px rgba(0, 200, 255, 0.8),
+        inset 0 0 50px rgba(255, 255, 255, 0.3);
 }
 
 .dark .orb-inactive {
-    background: radial-gradient(circle at center,
-    rgba(139, 92, 246, 0.4),
-    rgba(124, 58, 237, 0.3),
-    rgba(109, 40, 217, 0.2));
+    background: 
+        radial-gradient(circle at center, rgba(0, 200, 255, 0.5) 0%, rgba(0, 150, 255, 0.4) 40%, rgba(0, 100, 200, 0.3) 100%);
+    box-shadow: 
+        0 0 40px rgba(0, 200, 255, 0.5),
+        0 0 80px rgba(0, 150, 255, 0.4);
 }
 
-/* Inner Gradient Layer for Waving Effect */
+/* Inner magical swirling effect */
 .orb::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center,
-    rgba(168, 85, 247, 0.1),
-    rgba(124, 58, 237, 0.05),
-    transparent);
-
+    top: -25%;
+    left: -25%;
+    width: 150%;
+    height: 150%;
+    background: 
+        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.4) 0%, transparent 30%),
+        radial-gradient(circle at 60% 60%, rgba(0, 255, 255, 0.3) 0%, transparent 40%),
+        conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     border-radius: 50%;
-    animation: wave-motion 6s infinite linear;
+    animation: swirl 8s infinite linear;
 }
 
-/* Keyframes for Waving Animation */
-@keyframes wave {
+/* Additional magical particle effect */
+.orb::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.6) 0%, transparent 20%),
+        radial-gradient(circle at 75% 75%, rgba(0, 255, 255, 0.4) 0%, transparent 25%);
+    border-radius: 50%;
+    animation: float 6s infinite ease-in-out;
+    opacity: 0.7;
+}
+
+/* Enhanced keyframes for magical effects */
+@keyframes pulse-active {
     0%, 100% {
         transform: scale(1);
+        filter: brightness(1);
     }
     50% {
-        transform: scale(1.05);
+        transform: scale(1.08);
+        filter: brightness(1.2);
     }
 }
 
-@keyframes wave-motion {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
+@keyframes pulse-idle {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(0.8);
     }
     50% {
-        transform: translate(10px, 10px) rotate(180deg);
+        transform: scale(1.03);
+        filter: brightness(1);
+    }
+}
+
+@keyframes glow-active {
+    0%, 100% {
+        box-shadow: 
+            0 0 60px rgba(0, 255, 255, 0.8),
+            0 0 120px rgba(0, 150, 255, 0.6),
+            inset 0 0 40px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 80px rgba(0, 255, 255, 1),
+            0 0 160px rgba(0, 150, 255, 0.8),
+            inset 0 0 60px rgba(255, 255, 255, 0.4);
+    }
+}
+
+@keyframes glow-idle {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px rgba(0, 150, 255, 0.4),
+            0 0 60px rgba(0, 100, 200, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 40px rgba(0, 150, 255, 0.5),
+            0 0 80px rgba(0, 100, 200, 0.4);
+    }
+}
+
+@keyframes swirl {
+    0% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.6;
+    }
+    25% {
+        transform: rotate(90deg) scale(1.1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: rotate(180deg) scale(1);
+        opacity: 0.6;
+    }
+    75% {
+        transform: rotate(270deg) scale(1.1);
+        opacity: 0.8;
     }
     100% {
-        transform: translate(0, 0) rotate(360deg);
+        transform: rotate(360deg) scale(1);
+        opacity: 0.6;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.7;
+    }
+    33% {
+        transform: translateY(-10px) rotate(120deg);
+        opacity: 0.9;
+    }
+    66% {
+        transform: translateY(5px) rotate(240deg);
+        opacity: 0.8;
     }
 }
