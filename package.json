@@ -11,6 +11,7 @@
   "dependencies": {
     "@11labs/react": "^0.0.8",
     "@google/genai": "^1.7.0",
+    "@radix-ui/react-scroll-area": "^1.2.9",
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
