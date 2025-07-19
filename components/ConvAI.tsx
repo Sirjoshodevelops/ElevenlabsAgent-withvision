@@ -147,6 +147,12 @@ export function ConvAI() {
         addChatMessage("agent", message.message);
       } else if (message.type === "user_transcript") {
         addChatMessage("user", message.message);
+      } else if (message.type === "agent_response_start") {
+        // Agent started speaking
+        console.log("Agent started speaking");
+      } else if (message.type === "agent_response_end") {
+        // Agent finished speaking
+        console.log("Agent finished speaking");
       }
     },
   });
@@ -165,14 +171,17 @@ export function ConvAI() {
     if (!textInput.trim() || conversation.status !== "connected") return;
     
     addChatMessage("user", textInput);
+    const messageToSend = textInput;
+    setTextInput(""); // Clear input immediately for better UX
     
     try {
-      // Send text message to the conversation
-      await conversation.sendMessage(textInput);
-      setTextInput("");
+      // Send text message to the 11Labs conversation
+      await conversation.sendMessage(messageToSend);
     } catch (error) {
       console.error("Error sending message:", error);
       addChatMessage("system", "Failed to send message");
+      // Re-add the message to input if sending failed
+      setTextInput(messageToSend);
     }
   };
 
@@ -182,6 +191,9 @@ export function ConvAI() {
       alert("No permission");
       return;
     }
+    
+    addChatMessage("system", "Connecting to voice agent...");
+    
     const signedUrl = await getSignedUrl();
     const conversationId = await conversation.startSession({ 
       signedUrl,
@@ -191,6 +203,7 @@ export function ConvAI() {
   }
 
   const stopConversation = useCallback(async () => {
+    addChatMessage("system", "Disconnecting...");
     await conversation.endSession();
   }, [conversation]);
 
