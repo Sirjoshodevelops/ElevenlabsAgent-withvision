@@ -413,7 +413,7 @@ export function ConvAI() {
           showChat 
             ? 'w-96 opacity-100 translate-x-0 scale-100' 
             : 'w-0 opacity-0 -translate-x-full scale-95 pointer-events-none'
-        } flex flex-col overflow-hidden h-[600px]`}>
+        } flex flex-col overflow-hidden`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
             <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
             <Button
