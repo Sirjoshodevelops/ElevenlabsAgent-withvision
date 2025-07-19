@@ -6,7 +6,17 @@ import { useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversation } from "@11labs/react";
 import { cn } from "@/lib/utils";
+import { MessageCircle, X, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 // Removed GoogleGenAI import - using OpenRouter API instead
+
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'agent' | 'system';
+  content: string;
+  timestamp: Date;
+}
 
 async function requestMicrophonePermission() {
   try {
@@ -30,6 +40,9 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAI() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
+  const [showChat, setShowChat] = React.useState(false);
+  const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
+  const [textInput, setTextInput] = React.useState("");
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -117,18 +130,51 @@ export function ConvAI() {
   const conversation = useConversation({
     onConnect: () => {
       console.log("connected");
+      addChatMessage("system", "Connected to voice agent");
     },
     onDisconnect: () => {
       console.log("disconnected");
+      addChatMessage("system", "Disconnected from voice agent");
     },
     onError: error => {
       console.log(error);
+      addChatMessage("system", `Error: ${error.message || "An error occurred"}`);
       alert("An error occurred during the conversation");
     },
     onMessage: message => {
       console.log(message);
+      if (message.type === "agent_response") {
+        addChatMessage("agent", message.message);
+      } else if (message.type === "user_transcript") {
+        addChatMessage("user", message.message);
+      }
     },
   });
+
+  const addChatMessage = (type: 'user' | 'agent' | 'system', content: string) => {
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type,
+      content,
+      timestamp: new Date()
+    };
+    setChatMessages(prev => [...prev, newMessage]);
+  };
+
+  const sendTextMessage = async () => {
+    if (!textInput.trim() || conversation.status !== "connected") return;
+    
+    addChatMessage("user", textInput);
+    
+    try {
+      // Send text message to the conversation
+      await conversation.sendMessage(textInput);
+      setTextInput("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      addChatMessage("system", "Failed to send message");
+    }
+  };
 
   async function startConversation() {
     const hasPermission = await requestMicrophonePermission();
@@ -247,7 +293,7 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className={"flex justify-center items-center gap-x-4"}>
+    <div className={"flex justify-center items-center gap-x-4 relative"}>
       <Card className={"rounded-3xl"}>
         <CardContent>
           <CardHeader>
@@ -327,9 +373,79 @@ export function ConvAI() {
                 </div>
               )}
             </div>
+            
+            <div className="border-t pt-4 mt-4">
+              <Button
+                variant={"ghost"}
+                className={"rounded-full"}
+                size={"lg"}
+                onClick={() => setShowChat(!showChat)}
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                {showChat ? "Hide Chat" : "Show Chat"}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
+      
+      {/* Chat Panel */}
+      {showChat && (
+        <Card className="fixed right-4 top-20 bottom-4 w-80 z-50 flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Chat & Transcripts</CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowChat(false)}
+              className="h-6 w-6"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col p-4 pt-0">
+            <ScrollArea className="flex-1 pr-4">
+              <div className="space-y-2">
+                {chatMessages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "p-2 rounded-lg text-sm",
+                      message.type === "user" && "bg-primary text-primary-foreground ml-4",
+                      message.type === "agent" && "bg-muted mr-4",
+                      message.type === "system" && "bg-yellow-100 dark:bg-yellow-900 text-center text-xs"
+                    )}
+                  >
+                    <div className="font-medium text-xs opacity-70 mb-1">
+                      {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
+                    </div>
+                    <div>{message.content}</div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+            
+            {conversation.status === "connected" && (
+              <div className="flex gap-2 mt-4 pt-4 border-t">
+                <Input
+                  placeholder="Type a message..."
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                  className="flex-1"
+                />
+                <Button
+                  size="icon"
+                  onClick={sendTextMessage}
+                  disabled={!textInput.trim()}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
