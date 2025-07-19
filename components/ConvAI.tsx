@@ -306,7 +306,7 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full relative">
+    <div className="fixed inset-0 flex justify-center items-center w-full">
       <div className={`flex transition-all duration-500 ease-in-out ${
         showChat ? 'gap-6 scale-105' : 'gap-0'
       }`}>
@@ -413,7 +413,7 @@ export function ConvAI() {
           showChat 
             ? 'w-96 opacity-100 translate-x-0 scale-100' 
             : 'w-0 opacity-0 -translate-x-full scale-95 pointer-events-none'
-        } flex flex-col overflow-hidden`}>
+        } flex flex-col overflow-hidden h-[600px]`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
             <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
             <Button
@@ -425,7 +425,7 @@ export function ConvAI() {
               <X className="h-4 w-4" />
             </Button>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col px-6 pb-6 pt-2 min-h-0">
+          <CardContent className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-hidden">
             <ScrollArea className="flex-1 pr-4 mb-4">
               <div className="space-y-3">
                 {chatMessages.map((message) => (
@@ -454,7 +454,7 @@ export function ConvAI() {
             </ScrollArea>
             
             {conversation.status === "connected" && (
-              <div className="flex gap-2 pt-4 border-t">
+              <div className="flex gap-2 pt-4 border-t flex-shrink-0">
                 <Input
                   placeholder="Type a message..."
                   value={textInput}
@@ -474,7 +474,7 @@ export function ConvAI() {
             )}
             
             {conversation.status !== "connected" && (
-              <div className="pt-4 border-t text-center text-sm text-muted-foreground">
+              <div className="pt-4 border-t text-center text-sm text-muted-foreground flex-shrink-0">
                 Connect to start chatting
               </div>
             )}
