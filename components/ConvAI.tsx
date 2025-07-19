@@ -306,8 +306,184 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className={"flex justify-center items-center gap-x-4 relative"}>
-      <Card className={"rounded-3xl"}>
+    <div className="flex justify-center items-center min-h-screen w-full relative">
+      <div className={`flex transition-all duration-500 ease-in-out ${
+        showChat ? 'gap-6 scale-105' : 'gap-0'
+      }`}>
+        {/* Main Interface Card */}
+        <Card className={`rounded-3xl transition-all duration-500 ease-in-out ${
+          showChat ? 'w-96' : 'w-auto'
+        }`}>
+          <CardContent>
+            <CardHeader>
+              <CardTitle className={"text-center"}>
+                {conversation.status === "connected"
+                  ? conversation.isSpeaking
+                    ? `Agent is speaking`
+                    : "Agent is listening"
+                  : "Disconnected"}
+              </CardTitle>
+            </CardHeader>
+            <div className={"flex flex-col gap-y-4 text-center"}>
+              <div
+                className={cn(
+                  "orb my-16 mx-12",
+                  conversation.status === "connected" && conversation.isSpeaking
+                    ? "orb-active animate-orb"
+                    : conversation.status === "connected"
+                    ? "animate-orb-slow orb-inactive"
+                    : "orb-inactive"
+                )}
+              ></div>
+
+              <Button
+                variant={"default"}
+                className={"rounded-full"}
+                size={"lg"}
+                disabled={
+                  conversation !== null && conversation.status === "connected"
+                }
+                onClick={startConversation}
+              >
+                Start conversation
+              </Button>
+              <Button
+                variant={"outline"}
+                className={"rounded-full"}
+                size={"lg"}
+                disabled={conversation === null}
+                onClick={stopConversation}
+              >
+                End conversation
+              </Button>
+              
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm text-muted-foreground mb-2 text-center">Share Your Screen with the Agent</p>
+                {!isScreenSharing ? (
+                  <Button
+                    variant={"secondary"}
+                    className={"rounded-full"}
+                    size={"lg"}
+                    onClick={startScreenShare}
+                  >
+                    🖥️ Start Screen Share
+                  </Button>
+                ) : (
+                  <Button
+                    variant={"destructive"}
+                    className={"rounded-full"}
+                    size={"lg"}
+                    onClick={stopScreenShare}
+                  >
+                    🛑 Stop Screen Share
+                  </Button>
+                )}
+                
+                {isScreenSharing && (
+                  <div className="mt-2 text-center">
+                    <p className="text-xs text-green-600">
+                      🟢 Capturing screen every 3 seconds
+                    </p>
+                    {capturedImage && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        📸 Latest capture: {new Date().toLocaleTimeString()}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="border-t pt-4 mt-4">
+                <Button
+                  variant={"ghost"}
+                  className={"rounded-full"}
+                  size={"lg"}
+                  onClick={() => setShowChat(!showChat)}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  {showChat ? "Hide Chat" : "Show Chat"}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Chat Panel - Unified with Main Interface */}
+        <Card className={`rounded-3xl transition-all duration-500 ease-in-out transform ${
+          showChat 
+            ? 'w-96 opacity-100 translate-x-0 scale-100' 
+            : 'w-0 opacity-0 -translate-x-full scale-95 pointer-events-none'
+        } flex flex-col overflow-hidden`}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
+            <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowChat(false)}
+              className="h-8 w-8 rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col px-6 pb-6 pt-2 min-h-0">
+            <ScrollArea className="flex-1 pr-4 mb-4">
+              <div className="space-y-3">
+                {chatMessages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "p-3 rounded-lg text-sm max-w-[85%] break-words",
+                      message.type === "user" && "bg-primary text-primary-foreground ml-auto",
+                      message.type === "agent" && "bg-muted mr-auto",
+                      message.type === "system" && "bg-yellow-100 dark:bg-yellow-900 mx-auto text-center text-xs max-w-full"
+                    )}
+                  >
+                    <div className="font-medium text-xs opacity-70 mb-1">
+                      {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
+                    </div>
+                    <div className="leading-relaxed">{message.content}</div>
+                  </div>
+                ))}
+                {chatMessages.length === 0 && (
+                  <div className="text-center text-muted-foreground text-sm py-8">
+                    <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>Start a conversation to see messages here</p>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            
+            {conversation.status === "connected" && (
+              <div className="flex gap-2 pt-4 border-t">
+                <Input
+                  placeholder="Type a message..."
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                  className="flex-1 rounded-full"
+                />
+                <Button
+                  size="icon"
+                  onClick={sendTextMessage}
+                  disabled={!textInput.trim()}
+                  className="rounded-full"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            
+            {conversation.status !== "connected" && (
+              <div className="pt-4 border-t text-center text-sm text-muted-foreground">
+                Connect to start chatting
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
         <CardContent>
           <CardHeader>
             <CardTitle className={"text-center"}>
