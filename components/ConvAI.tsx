@@ -369,52 +369,59 @@ export function ConvAI() {
                 End conversation
               </Button>
               
+              {/* Bento-style grid for additional features */}
               <div className="border-t pt-4 mt-4">
-                <p className="text-sm text-muted-foreground mb-2 text-center">Share Your Screen with the Agent</p>
-                {!isScreenSharing ? (
-                  <Button
-                    variant={"secondary"}
-                    className={"rounded-full"}
-                    size={"lg"}
-                    onClick={startScreenShare}
-                  >
-                    🖥️ Start Screen Share
-                  </Button>
-                ) : (
-                  <Button
-                    variant={"destructive"}
-                    className={"rounded-full"}
-                    size={"lg"}
-                    onClick={stopScreenShare}
-                  >
-                    🛑 Stop Screen Share
-                  </Button>
-                )}
-                
-                {isScreenSharing && (
-                  <div className="mt-2 text-center">
-                    <p className="text-xs text-green-600">
-                      🟢 Capturing screen every 3 seconds
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Screen Share Card */}
+                  <div className="bg-muted/50 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[120px] border border-border/50">
+                    <div className="text-2xl mb-2">🖥️</div>
+                    <p className="text-xs text-muted-foreground mb-3 text-center leading-tight">
+                      Share Your Screen
                     </p>
-                    {capturedImage && (
-                      <p className="text-xs text-blue-600 mt-1">
-                        📸 Latest capture: {new Date().toLocaleTimeString()}
-                      </p>
+                    {!isScreenSharing ? (
+                      <Button
+                        variant={"secondary"}
+                        className={"rounded-full text-xs"}
+                        size={"sm"}
+                        onClick={startScreenShare}
+                      >
+                        Start Share
+                      </Button>
+                    ) : (
+                      <Button
+                        variant={"destructive"}
+                        className={"rounded-full text-xs"}
+                        size={"sm"}
+                        onClick={stopScreenShare}
+                      >
+                        Stop Share
+                      </Button>
+                    )}
+                    {isScreenSharing && (
+                      <div className="mt-2 text-center">
+                        <p className="text-xs text-green-600">
+                          🟢 Active
+                        </p>
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-              
-              <div className="border-t pt-4 mt-4">
-                <Button
-                  variant={"ghost"}
-                  className={"rounded-full"}
-                  size={"lg"}
-                  onClick={() => setShowChat(!showChat)}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  {showChat ? "Hide Chat" : "Show Chat"}
-                </Button>
+                  
+                  {/* Chat Card */}
+                  <div className="bg-muted/50 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[120px] border border-border/50">
+                    <div className="text-2xl mb-2">💬</div>
+                    <p className="text-xs text-muted-foreground mb-3 text-center leading-tight">
+                      Chat & Transcripts
+                    </p>
+                    <Button
+                      variant={"ghost"}
+                      className={"rounded-full text-xs"}
+                      size={"sm"}
+                      onClick={() => setShowChat(!showChat)}
+                    >
+                      {showChat ? "Hide Chat" : "Show Chat"}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
