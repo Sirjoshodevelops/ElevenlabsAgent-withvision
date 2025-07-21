@@ -469,6 +469,6 @@ export function ConvAISidebar() {
         </Card>
       </div>
     </div>
+    </div>
   );
-}</CardContent>
-            </CardHeader>
+}
