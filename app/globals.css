@@ -116,11 +116,9 @@ body {
     min-width: 320px;
     overflow-x: hidden;
     overflow-y: auto;
-    position: fixed;
-    top: 0;
-    left: 0;
+    margin: 0;
+    padding: 0;
     background: hsl(var(--background));
-    border-right: 1px solid hsl(var(--border));
 }
 
 .sidebar-container {
@@ -128,6 +126,8 @@ body {
     height: 100vh;
     overflow-y: auto;
     background: hsl(var(--background));
+    display: flex;
+    flex-direction: column;
 }
 
 /* Ensure all content fits within 320px */
@@ -136,13 +136,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Override any responsive breakpoints for sidebar */
-@media (min-width: 320px) {
-    .sidebar-viewport {
-        width: 320px;
-        max-width: 320px;
-    }
-}
 
 .animate-orb {
     animation: pulse-active 0.8s infinite ease-in-out, glow-active 1.5s infinite ease-in-out, voice-reactive 0.3s infinite ease-in-out;

@@ -9,16 +9,14 @@ export const metadata: Metadata = {
 export default function SidebarLayout({children}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className="h-full w-full">
-        <body className="antialiased w-full h-full flex flex-col overflow-hidden">
+        <body className="antialiased w-full h-full overflow-hidden m-0 p-0">
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
         >
-            <div className="sidebar-viewport">
-                {children}
-            </div>
+            {children}
         </ThemeProvider>
         </body>
         </html>
