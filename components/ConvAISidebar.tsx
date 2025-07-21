@@ -39,6 +39,7 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAISidebar() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
+  const [showChat, setShowChat] = React.useState(true); // Always open by default
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const screenStreamRef = React.useRef<MediaStream | null>(null);
@@ -134,7 +135,7 @@ export function ConvAISidebar() {
       console.log("disconnected");
       addChatMessage("system", "Disconnected from voice agent");
     },
-    onError: (error: unknown) => {
+    onError: error => {
       console.log(error);
       addChatMessage("system", `Error: ${error instanceof Error ? error.message : error || "An error occurred"}`);
       alert("An error occurred during the conversation");
@@ -204,24 +205,6 @@ export function ConvAISidebar() {
     addChatMessage("system", "Disconnecting...");
     await conversation.endSession();
   }, [conversation]);
-
-  const stopScreenShare = useCallback(() => {
-    console.log('🛑 Stopping screen share...');
-    
-    if (captureIntervalRef.current) {
-      clearInterval(captureIntervalRef.current);
-      captureIntervalRef.current = null;
-    }
-    
-    if (screenStreamRef.current) {
-      screenStreamRef.current.getTracks().forEach(track => track.stop());
-      screenStreamRef.current = null;
-    }
-    
-    setIsScreenSharing(false);
-    setCapturedImage(null);
-    console.log('✅ Screen share stopped');
-  }, []);
 
   const captureScreen = useCallback(async () => {
     if (!screenStreamRef.current) return;
@@ -301,7 +284,25 @@ export function ConvAISidebar() {
       console.error('❌ Error starting screen share:', error);
       alert('Failed to start screen sharing');
     }
-  }, [captureScreen, stopScreenShare]);
+  }, [captureScreen]);
+
+  const stopScreenShare = useCallback(() => {
+    console.log('🛑 Stopping screen share...');
+    
+    if (captureIntervalRef.current) {
+      clearInterval(captureIntervalRef.current);
+      captureIntervalRef.current = null;
+    }
+    
+    if (screenStreamRef.current) {
+      screenStreamRef.current.getTracks().forEach(track => track.stop());
+      screenStreamRef.current = null;
+    }
+    
+    setIsScreenSharing(false);
+    setCapturedImage(null);
+    console.log('✅ Screen share stopped');
+  }, []);
 
   return (
     <div className="sidebar-viewport">

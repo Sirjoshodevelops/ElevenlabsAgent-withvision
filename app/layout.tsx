@@ -9,8 +9,8 @@ export const metadata: Metadata = {
     title: "Voice AI Assistant",
 };
 
-export default async function RootLayout({children}: Readonly<{ children: React.ReactNode }>) {
-    const headersList = await headers();
+export default function RootLayout({children}: Readonly<{ children: React.ReactNode }>) {
+    const headersList = headers();
     const pathname = headersList.get('x-pathname') || '';
     const isSidebar = pathname.includes('/sidebar');
 
