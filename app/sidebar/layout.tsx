@@ -17,8 +17,3 @@ export default function SidebarLayout({children}: Readonly<{ children: React.Rea
             disableTransitionOnChange
         >
             {children}
-        </ThemeProvider>
-        </body>
-        </html>
-    );
-}
