@@ -206,6 +206,24 @@ export function ConvAISidebar() {
     await conversation.endSession();
   }, [conversation]);
 
+  const stopScreenShare = useCallback(() => {
+    console.log('🛑 Stopping screen share...');
+    
+    if (captureIntervalRef.current) {
+      clearInterval(captureIntervalRef.current);
+      captureIntervalRef.current = null;
+    }
+    
+    if (screenStreamRef.current) {
+      screenStreamRef.current.getTracks().forEach(track => track.stop());
+      screenStreamRef.current = null;
+    }
+    
+    setIsScreenSharing(false);
+    setCapturedImage(null);
+    console.log('✅ Screen share stopped');
+  }, []);
+
   const captureScreen = useCallback(async () => {
     if (!screenStreamRef.current) return;
 
@@ -285,24 +303,6 @@ export function ConvAISidebar() {
       alert('Failed to start screen sharing');
     }
   }, [captureScreen, stopScreenShare]);
-
-  const stopScreenShare = useCallback(() => {
-    console.log('🛑 Stopping screen share...');
-    
-    if (captureIntervalRef.current) {
-      clearInterval(captureIntervalRef.current);
-      captureIntervalRef.current = null;
-    }
-    
-    if (screenStreamRef.current) {
-      screenStreamRef.current.getTracks().forEach(track => track.stop());
-      screenStreamRef.current = null;
-    }
-    
-    setIsScreenSharing(false);
-    setCapturedImage(null);
-    console.log('✅ Screen share stopped');
-  }, []);
 
   return (
     <div className="sidebar-viewport">
