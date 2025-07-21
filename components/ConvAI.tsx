@@ -138,7 +138,7 @@ export function ConvAI() {
     },
     onError: error => {
       console.log(error);
-      addChatMessage("system", `Error: ${(error as any) instanceof Error ? (error as any).message : error || "An error occurred"}`);
+      addChatMessage("system", `Error: ${error instanceof Error ? error.message : String(error) || "An error occurred"}`);
       alert("An error occurred during the conversation");
     },
     onMessage: message => {
