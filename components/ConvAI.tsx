@@ -136,7 +136,7 @@ export function ConvAI() {
       console.log("disconnected");
       addChatMessage("system", "Disconnected from voice agent");
     },
-    onError: error => {
+    onError: (error: unknown) => {
       console.log(error);
       addChatMessage("system", `Error: ${error instanceof Error ? error.message : String(error) || "An error occurred"}`);
       alert("An error occurred during the conversation");
