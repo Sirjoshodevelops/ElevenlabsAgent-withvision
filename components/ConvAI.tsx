@@ -319,13 +319,9 @@ export function ConvAI() {
 
   return (
     <div className="fixed inset-0 flex justify-center items-center w-full">
-      <div className={`flex transition-all duration-500 ease-in-out ${
-        showChat ? 'gap-6 scale-105' : 'gap-0'
-      }`}>
+      <div className="flex flex-col items-center transition-all duration-500 ease-in-out">
         {/* Main Interface Card */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out ${
-          showChat ? 'w-96' : 'w-auto'
-        }`}>
+        <Card className="rounded-3xl transition-all duration-500 ease-in-out w-auto">
           <CardContent>
             <CardHeader>
               <CardTitle className={"text-center"}>
@@ -339,7 +335,7 @@ export function ConvAI() {
             <div className={"flex flex-col gap-y-4 text-center"}>
               <div
                 className={cn(
-                  "orb my-16 mx-12",
+                  showChat ? "w-48 h-48 my-8 mx-8" : "orb my-16 mx-12",
                   conversation.status === "connected" && conversation.isSpeaking
                     ? "orb-active animate-orb"
                     : conversation.status === "connected"
@@ -427,11 +423,11 @@ export function ConvAI() {
           </CardContent>
         </Card>
         
-        {/* Chat Panel - Unified with Main Interface */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out transform ${
+        {/* Chat Panel - Below Main Interface */}
+        <Card className={`rounded-3xl transition-all duration-500 ease-in-out transform mt-4 ${
           showChat 
-            ? 'w-96 opacity-100 translate-x-0 scale-100' 
-            : 'w-0 opacity-0 -translate-x-full scale-95 pointer-events-none'
+            ? 'w-96 h-80 opacity-100 translate-y-0 scale-100' 
+            : 'w-96 h-0 opacity-0 -translate-y-4 scale-95 pointer-events-none overflow-hidden'
         } flex flex-col overflow-hidden`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
             <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
@@ -499,7 +495,7 @@ export function ConvAI() {
             )}
           </CardContent>
         </Card>
-      </div>
+    </div>
     </div>
   );
 }
