@@ -284,7 +284,7 @@ export function ConvAISidebar() {
       console.error('❌ Error starting screen share:', error);
       alert('Failed to start screen sharing');
     }
-  }, [captureScreen]);
+  }, [captureScreen, stopScreenShare]);
 
   const stopScreenShare = useCallback(() => {
     console.log('🛑 Stopping screen share...');
