@@ -39,7 +39,6 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAISidebar() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
-  const [showChat, setShowChat] = React.useState(true); // Always open by default
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const screenStreamRef = React.useRef<MediaStream | null>(null);
