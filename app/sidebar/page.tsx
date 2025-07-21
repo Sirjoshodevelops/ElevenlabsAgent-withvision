@@ -2,7 +2,7 @@ import {ConvAISidebar} from "@/components/ConvAISidebar";
 
 export default function SidebarPage() {
     return (
-        <div className="min-h-screen w-full bg-background">
+        <div className="sidebar-container">
             <ConvAISidebar/>
         </div>
     );

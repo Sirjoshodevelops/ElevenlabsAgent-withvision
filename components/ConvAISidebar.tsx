@@ -305,18 +305,18 @@ export function ConvAISidebar() {
   }, []);
 
   return (
-    <div className="min-w-[320px] max-w-full h-screen overflow-y-auto bg-background">
+    <div className="w-full h-full overflow-y-auto bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b px-4 py-3">
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b px-3 py-2">
         <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
           Voice AI Assistant
         </h1>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-3 space-y-3">
         {/* Status Card */}
         <Card className="w-full">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-center text-sm">
               {conversation.status === "connected"
                 ? conversation.isSpeaking
@@ -325,12 +325,12 @@ export function ConvAISidebar() {
                 : "Disconnected"}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 px-3 pb-3">
             {/* Compact Orb */}
             <div className="flex justify-center mb-4">
               <div
                 className={cn(
-                  "w-24 h-24 rounded-full relative overflow-hidden backdrop-blur-30 border-2 border-cyan-400/40",
+                  "w-20 h-20 rounded-full relative overflow-hidden backdrop-blur-30 border-2 border-cyan-400/40",
                   "shadow-[0_0_0_1px_rgba(255,255,255,0.1),inset_0_0_0_1px_rgba(255,255,255,0.2)]",
                   conversation.status === "connected" && conversation.isSpeaking
                     ? "orb-active animate-orb"
@@ -368,10 +368,10 @@ export function ConvAISidebar() {
         </Card>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 gap-2">
           {/* Screen Share */}
           <Card className="w-full">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {isScreenSharing ? (
@@ -411,7 +411,7 @@ export function ConvAISidebar() {
 
           {/* Chat Toggle */}
           <Card className="w-full">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <MessageCircle className="w-5 h-5 text-muted-foreground" />
@@ -438,7 +438,7 @@ export function ConvAISidebar() {
         {/* Chat Section */}
         {showChat && (
           <Card className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 pt-3">
               <CardTitle className="text-sm font-semibold">Chat</CardTitle>
               <Button
                 variant="ghost"
@@ -449,8 +449,8 @@ export function ConvAISidebar() {
                 <X className="h-3 w-3" />
               </Button>
             </CardHeader>
-            <CardContent className="pt-0">
-              <ScrollArea className="h-48 w-full pr-4 mb-3">
+            <CardContent className="pt-0 px-3 pb-3">
+              <ScrollArea className="h-40 w-full pr-2 mb-3">
                 <div className="space-y-2">
                   {chatMessages.map((message) => (
                     <div
@@ -478,7 +478,7 @@ export function ConvAISidebar() {
               </ScrollArea>
               
               {conversation.status === "connected" && (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <Input
                     placeholder="Type a message..."
                     value={textInput}
@@ -490,7 +490,7 @@ export function ConvAISidebar() {
                     size="icon"
                     onClick={sendTextMessage}
                     disabled={!textInput.trim()}
-                    className="h-8 w-8"
+                    className="h-8 w-8 flex-shrink-0"
                   >
                     <Send className="h-3 w-3" />
                   </Button>
