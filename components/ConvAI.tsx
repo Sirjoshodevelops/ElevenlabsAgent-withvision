@@ -321,7 +321,9 @@ export function ConvAI() {
     <div className="fixed inset-0 flex justify-center items-center w-full">
       <div className="flex flex-col items-center transition-all duration-500 ease-in-out">
         {/* Main Interface Card */}
-        <Card className="rounded-3xl transition-all duration-500 ease-in-out w-auto">
+        <Card className={`rounded-3xl transition-all duration-500 ease-in-out w-auto ${
+          showChat ? 'pb-6' : ''
+        }`}>
           <CardContent>
             <CardHeader>
               <CardTitle className={"text-center"}>
@@ -335,7 +337,7 @@ export function ConvAI() {
             <div className={"flex flex-col gap-y-4 text-center"}>
               <div
                 className={cn(
-                  showChat ? "w-48 h-48 my-8 mx-8" : "orb my-16 mx-12",
+                  showChat ? "w-32 h-32 my-4 mx-8" : "orb my-16 mx-12",
                   conversation.status === "connected" && conversation.isSpeaking
                     ? "orb-active animate-orb"
                     : conversation.status === "connected"
@@ -419,83 +421,87 @@ export function ConvAI() {
                   </div>
                 </div>
               </div>
+              
+              {/* Chat Panel - Inside Same Card */}
+              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                showChat 
+                  ? 'max-h-80 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold">Chat & Transcripts</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowChat(false)}
+                      className="h-8 w-8 rounded-full"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="h-64 flex flex-col">
+                    <ScrollArea className="flex-1 pr-4 mb-4">
+                      <div className="space-y-3">
+                        {chatMessages.map((message) => (
+                          <div
+                            key={message.id}
+                            className={cn(
+                              "p-3 rounded-lg text-sm max-w-[85%] break-words",
+                              message.type === "user" && "bg-primary text-primary-foreground ml-auto",
+                              message.type === "agent" && "bg-muted mr-auto",
+                              message.type === "system" && "bg-yellow-100 dark:bg-yellow-900 mx-auto text-center text-xs max-w-full"
+                            )}
+                          >
+                            <div className="font-medium text-xs opacity-70 mb-1">
+                              {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
+                            </div>
+                            <div className="leading-relaxed">{message.content}</div>
+                          </div>
+                        ))}
+                        {chatMessages.length === 0 && (
+                          <div className="text-center text-muted-foreground text-sm py-8">
+                            <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p>Start a conversation to see messages here</p>
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                    
+                    {conversation.status === "connected" && (
+                      <div className="flex gap-2 pt-4 border-t flex-shrink-0">
+                        <Input
+                          placeholder="Type a message..."
+                          value={textInput}
+                          onChange={(e) => setTextInput(e.target.value)}
+                          onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                          className="flex-1 rounded-full"
+                        />
+                        <Button
+                          size="icon"
+                          onClick={sendTextMessage}
+                          disabled={!textInput.trim()}
+                          className="rounded-full"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {conversation.status !== "connected" && (
+                      <div className="pt-4 border-t text-center text-sm text-muted-foreground flex-shrink-0">
+                        Connect to start chatting
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
         
         {/* Chat Panel - Below Main Interface */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out transform mt-4 ${
-          showChat 
-            ? 'w-96 h-80 opacity-100 translate-y-0 scale-100' 
-            : 'w-96 h-0 opacity-0 -translate-y-4 scale-95 pointer-events-none overflow-hidden'
-        } flex flex-col overflow-hidden`}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
-            <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowChat(false)}
-              className="h-8 w-8 rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-hidden">
-            <ScrollArea className="flex-1 pr-4 mb-4">
-              <div className="space-y-3">
-                {chatMessages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={cn(
-                      "p-3 rounded-lg text-sm max-w-[85%] break-words",
-                      message.type === "user" && "bg-primary text-primary-foreground ml-auto",
-                      message.type === "agent" && "bg-muted mr-auto",
-                      message.type === "system" && "bg-yellow-100 dark:bg-yellow-900 mx-auto text-center text-xs max-w-full"
-                    )}
-                  >
-                    <div className="font-medium text-xs opacity-70 mb-1">
-                      {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
-                    </div>
-                    <div className="leading-relaxed">{message.content}</div>
-                  </div>
-                ))}
-                {chatMessages.length === 0 && (
-                  <div className="text-center text-muted-foreground text-sm py-8">
-                    <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>Start a conversation to see messages here</p>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-            
-            {conversation.status === "connected" && (
-              <div className="flex gap-2 pt-4 border-t flex-shrink-0">
-                <Input
-                  placeholder="Type a message..."
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
-                  className="flex-1 rounded-full"
-                />
-                <Button
-                  size="icon"
-                  onClick={sendTextMessage}
-                  disabled={!textInput.trim()}
-                  className="rounded-full"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            
-            {conversation.status !== "connected" && (
-              <div className="pt-4 border-t text-center text-sm text-muted-foreground flex-shrink-0">
-                Connect to start chatting
-              </div>
-            )}
-          </CardContent>
-        </Card>
-    </div>
     </div>
   );
 }
