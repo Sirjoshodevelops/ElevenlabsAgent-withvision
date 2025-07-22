@@ -502,6 +502,7 @@ export function ConvAI() {
         </Card>
         
         {/* Chat Panel - Below Main Interface */}
+      </div>
     </div>
   );
 }
