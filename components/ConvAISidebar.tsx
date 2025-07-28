@@ -56,14 +56,29 @@ export function ConvAISidebar() {
       const timestamp = () => `[${new Date().toLocaleTimeString()}.${Date.now() % 1000}]`;
       
       console.log(`${timestamp()} 🔍 SeeImage tool called with prompt:`, image_prompt);
+      console.log(`${timestamp()} 📊 Current state - isScreenSharing:`, isScreenSharing);
+      console.log(`${timestamp()} 📊 Current state - capturedImage exists:`, !!capturedImage);
+      console.log(`${timestamp()} 📊 Current state - capturedImage length:`, capturedImage?.length || 0);
+      console.log(`${timestamp()} 📊 OPENROUTER_API_KEY exists:`, !!OPENROUTER_API_KEY);
+      
+      // Add system message for debugging
+      addChatMessage("system", `Vision tool called: "${image_prompt}"`);
       
       if (!capturedImage) {
         console.log(`${timestamp()} ❌ No captured image available`);
+        addChatMessage("system", "❌ No image available - start screen sharing first");
         return "No image is currently available. Please start screen sharing first.";
+      }
+
+      if (!OPENROUTER_API_KEY) {
+        console.log(`${timestamp()} ❌ No OpenRouter API key available`);
+        addChatMessage("system", "❌ OpenRouter API key not configured");
+        return "Vision analysis is not available - API key not configured.";
       }
 
       try {
         console.log(`${timestamp()} 🚀 Starting image analysis process...`);
+        addChatMessage("system", "🔍 Analyzing image...");
         
         // Image is already in data URL format (data:image/jpeg;base64,...)
         const dataExtractionStart = Date.now();
@@ -74,42 +89,52 @@ export function ConvAISidebar() {
         console.log(`${timestamp()} 📝 Using prompt: "${image_prompt}"`);
         const apiCallStart = Date.now();
         
+        const requestBody = {
+          model: 'mistralai/mistral-small-3.2-24b-instruct:free',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: "This is the instruction for you on the image, please directly answer the question." + image_prompt,
+                },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: capturedImage,
+                  },
+                },
+              ],
+            },
+          ],
+        };
+        
+        console.log(`${timestamp()} 📤 Request body prepared, model:`, requestBody.model);
+        console.log(`${timestamp()} 📤 Message content types:`, requestBody.messages[0].content.map(c => c.type));
+        
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            model: 'mistralai/mistral-small-3.2-24b-instruct:free',
-            messages: [
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'text',
-                    text: "This is the instruction for you on the image, please directly answer the question." + image_prompt,
-                  },
-                  {
-                    type: 'image_url',
-                    image_url: {
-                      url: capturedImage,
-                    },
-                  },
-                ],
-              },
-            ],
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         const apiCallDuration = Date.now() - apiCallStart;
         console.log(`${timestamp()} ⚡ OpenRouter API response received (${apiCallDuration}ms)`);
+        console.log(`${timestamp()} 📊 Response status:`, response.status, response.statusText);
 
         if (!response.ok) {
-          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          console.log(`${timestamp()} ❌ API Error Response:`, errorText);
+          addChatMessage("system", `❌ API Error: ${response.status} ${response.statusText}`);
+          throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
         const data = await response.json();
+        console.log(`${timestamp()} 📊 Full API Response:`, data);
         const description = data.choices?.[0]?.message?.content || "No description generated";
         const totalDuration = Date.now() - startTime;
         
@@ -117,11 +142,14 @@ export function ConvAISidebar() {
         console.log(`${timestamp()} 📝 Description length: ${description.length} characters`);
         console.log(`${timestamp()} 📄 Description:`, description);
         
+        addChatMessage("system", `✅ Vision analysis completed in ${totalDuration}ms`);
+        
         return description;
         
       } catch (error) {
         const errorDuration = Date.now() - startTime;
         console.error(`${timestamp()} ❌ Error analyzing image with OpenRouter (${errorDuration}ms):`, error);
+        addChatMessage("system", `❌ Vision error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return "Sorry, I couldn't analyze the image at this moment. Please try again.";
       }
     },
