@@ -46,7 +46,13 @@ export function ConvAI() {
   const [isMobile, setIsMobile] = React.useState(false);
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const capturedImageRef = React.useRef<string | null>(null);
 
+  // Keep ref in sync with state
+  React.useEffect(() => {
+    capturedImageRef.current = capturedImage;
+  }, [capturedImage]);
+  
   // Check for mobile device
   React.useEffect(() => {
     const checkMobile = () => {
@@ -58,8 +64,8 @@ export function ConvAI() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // OpenRouter API configuration
-  const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+  // Google Gemini API configuration
+  const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
   // Define client tools outside of startSession
   const clientTools = React.useMemo(() => ({
@@ -69,7 +75,7 @@ export function ConvAI() {
       
       console.log(`${timestamp()} 🔍 SeeImage tool called with prompt:`, image_prompt);
       
-      if (!capturedImage) {
+      if (!capturedImageRef.current) {
         console.log(`${timestamp()} ❌ No captured image available`);
         return "No image is currently available. Please start screen sharing first.";
       }
@@ -80,49 +86,46 @@ export function ConvAI() {
         // Image is already in data URL format (data:image/jpeg;base64,...)
         const dataExtractionStart = Date.now();
         console.log(`${timestamp()} 📊 Using captured image data URL (${Date.now() - dataExtractionStart}ms)`);
-        console.log(`${timestamp()} 📏 Image data size: ${Math.round(capturedImage.length / 1024)}KB`);
+        console.log(`${timestamp()} 📏 Image data size: ${Math.round(capturedImageRef.current.length / 1024)}KB`);
 
-        console.log(`${timestamp()} 🌐 Sending request to OpenRouter API with prompt...`);
+        console.log(`${timestamp()} 🌐 Sending request to Google Gemini API with prompt...`);
         console.log(`${timestamp()} 📝 Using prompt: "${image_prompt}"`);
         const apiCallStart = Date.now();
         
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        // Extract base64 image data from data URL
+        const base64Image = capturedImageRef.current.split(',')[1];
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'mistralai/mistral-small-3.2-24b-instruct:free',
-            messages: [
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'text',
-                    text: "This is the instruction for you on the image, please directly answer the question." + image_prompt,
-                  },
-                  {
-                    type: 'image_url',
-                    image_url: {
-                      url: capturedImage,
-                    },
-                  },
-                ],
-              },
-            ],
+            contents: [{
+              parts: [
+                {
+                  text: image_prompt
+                },
+                {
+                  inline_data: {
+                    mime_type: 'image/jpeg',
+                    data: base64Image
+                  }
+                }
+              ]
+            }]
           }),
         });
 
         const apiCallDuration = Date.now() - apiCallStart;
-        console.log(`${timestamp()} ⚡ OpenRouter API response received (${apiCallDuration}ms)`);
+        console.log(`${timestamp()} ⚡ Google Gemini API response received (${apiCallDuration}ms)`);
 
         if (!response.ok) {
           throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        const description = data.choices?.[0]?.message?.content || "No description generated";
+        const description = data.candidates?.[0]?.content?.parts?.[0]?.text || "No description generated";
         const totalDuration = Date.now() - startTime;
         
         console.log(`${timestamp()} ✅ Image analysis completed (Total: ${totalDuration}ms)`);
@@ -133,11 +136,11 @@ export function ConvAI() {
         
       } catch (error) {
         const errorDuration = Date.now() - startTime;
-        console.error(`${timestamp()} ❌ Error analyzing image with OpenRouter (${errorDuration}ms):`, error);
+        console.error(`${timestamp()} ❌ Error analyzing image with Google Gemini (${errorDuration}ms):`, error);
         return "Sorry, I couldn't analyze the image at this moment. Please try again.";
       }
     },
-  }), [capturedImage, OPENROUTER_API_KEY]);
+  }), [GOOGLE_API_KEY]);
 
   const conversation = useConversation({
     onConnect: () => {
