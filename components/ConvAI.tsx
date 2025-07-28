@@ -31,7 +31,9 @@ async function requestMicrophonePermission() {
 async function getSignedUrl(): Promise<string> {
   const response = await fetch("/api/signed-url");
   if (!response.ok) {
-    throw Error("Failed to get signed url");
+    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+    console.error("Failed to get signed URL:", errorData);
+    throw new Error(`Failed to get signed URL: ${errorData.error || response.statusText}`);
   }
   const data = await response.json();
   return data.signedUrl;
