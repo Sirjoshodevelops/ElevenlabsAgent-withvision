@@ -321,9 +321,7 @@ export function ConvAI() {
     <div className="fixed inset-0 flex justify-center items-center w-full">
       <div className="flex flex-col items-center transition-all duration-500 ease-in-out">
         {/* Main Interface Card */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out w-auto ${
-          showChat ? 'pb-6' : ''
-        }`}>
+        <Card className="rounded-3xl transition-all duration-500 ease-in-out w-[400px]">
           <CardContent>
             <CardHeader>
               <CardTitle className={"text-center"}>
@@ -337,7 +335,7 @@ export function ConvAI() {
             <div className={"flex flex-col gap-y-4 text-center"}>
               <div
                 className={cn(
-                  showChat ? "w-32 h-32 my-4 mx-8" : "orb my-16 mx-12",
+                  showChat ? "w-32 h-32 my-4 mx-auto" : "orb my-16 mx-12",
                   conversation.status === "connected" && conversation.isSpeaking
                     ? "orb-active animate-orb"
                     : conversation.status === "connected"
@@ -411,7 +409,7 @@ export function ConvAI() {
                       Chat & Transcripts
                     </p>
                     <Button
-                      variant={"ghost"}
+                      variant={showChat ? "secondary" : "ghost"}
                       className={"rounded-full text-xs"}
                       size={"sm"}
                       onClick={() => setShowChat(!showChat)}
@@ -422,13 +420,13 @@ export function ConvAI() {
                 </div>
               </div>
               
-              {/* Chat Panel - Inside Same Card */}
-              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+              {/* Chat Panel - Smooth Expansion */}
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
                 showChat 
-                  ? 'max-h-80 opacity-100' 
+                  ? 'max-h-96 opacity-100 mt-4' 
                   : 'max-h-0 opacity-0'
               }`}>
-                <div className="border-t pt-4 mt-4">
+                <div className="border-t pt-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold">Chat & Transcripts</h3>
                     <Button
@@ -441,7 +439,7 @@ export function ConvAI() {
                     </Button>
                   </div>
                   
-                  <div className="h-64 flex flex-col">
+                  <div className="h-72 flex flex-col">
                     <ScrollArea className="flex-1 pr-4 mb-4">
                       <div className="space-y-3">
                         {chatMessages.map((message) => (
