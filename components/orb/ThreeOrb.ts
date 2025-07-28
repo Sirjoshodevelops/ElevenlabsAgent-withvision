@@ -6,6 +6,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
 
 const vertexShader = `
 uniform float u_time;
+uniform float u_frequency;
 
 vec3 mod289(vec3 x)
 {
@@ -101,13 +102,11 @@ float pnoise(vec3 P, vec3 rep)
   return 2.2 * n_xyz;
 }
 
-uniform float u_frequency;
-
 void main() {
-    float noise = 3.0 * pnoise(position + u_time, vec3(10.0));
-    float displacement = (u_frequency / 30.) * (noise / 10.);
-    vec3 newPosition = position + normal * displacement;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  float noise = 3.0 * pnoise(position + u_time, vec3(10.0));
+  float displacement = (u_frequency / 30.0) * (noise / 10.0);
+  vec3 newPosition = position + normal * displacement;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 `;
 
@@ -115,8 +114,9 @@ const fragmentShader = `
 uniform float u_red;
 uniform float u_blue;
 uniform float u_green;
+
 void main() {
-    gl_FragColor = vec4(vec3(u_red, u_green, u_blue), 1.0);
+  gl_FragColor = vec4(vec3(u_red, u_green, u_blue), 1.0);
 }
 `;
 
@@ -149,7 +149,7 @@ export class ThreeOrb {
     green: 1.0,
     blue: 1.0,
     threshold: 0.5,
-    strength: 0.5,
+    strength: 0.4,
     radius: 0.8
   };
 
@@ -172,8 +172,31 @@ export class ThreeOrb {
     this.camera.position.set(0, -2, 14);
     this.camera.lookAt(0, 0, 0);
 
+    // Setup uniforms
+    this.uniforms = {
+      u_time: { value: 0.0 },
+      u_frequency: { value: 0.0 },
+      u_red: { value: this.params.red },
+      u_green: { value: this.params.green },
+      u_blue: { value: this.params.blue }
+    };
+
+    // Create material with shaders
+    const material = new THREE.ShaderMaterial({
+      wireframe: true,
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader
+    });
+
+    // Create geometry and mesh
+    const geometry = new THREE.IcosahedronGeometry(4, 30);
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.scene.add(this.mesh);
+
     // Setup post-processing
     const renderScene = new RenderPass(this.scene, this.camera);
+    
     this.bloomPass = new UnrealBloomPass(new THREE.Vector2(512, 512));
     this.bloomPass.threshold = this.params.threshold;
     this.bloomPass.strength = this.params.strength;
@@ -183,27 +206,6 @@ export class ThreeOrb {
     this.bloomComposer.addPass(renderScene);
     this.bloomComposer.addPass(this.bloomPass);
     this.bloomComposer.addPass(new OutputPass());
-
-    // Setup uniforms and material
-    this.uniforms = {
-      u_time: { type: 'f', value: 0.0 },
-      u_frequency: { type: 'f', value: 0.0 },
-      u_red: { type: 'f', value: 1.0 },
-      u_green: { type: 'f', value: 1.0 },
-      u_blue: { type: 'f', value: 1.0 }
-    };
-
-    const material = new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
-      vertexShader,
-      fragmentShader
-    });
-
-    // Create geometry and mesh
-    const geometry = new THREE.IcosahedronGeometry(4, 30);
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.material.wireframe = true;
-    this.scene.add(this.mesh);
 
     // Setup mouse tracking
     this.setupMouseTracking();
@@ -281,8 +283,7 @@ export class ThreeOrb {
   }
 
   public updateVolume(inputVolume: number, outputVolume: number) {
-    // Use output volume to drive the frequency uniform
-    // Scale it to a reasonable range for the shader
+    // Use output volume to drive the frequency uniform (simulating audio analyzer)
     const frequency = Math.max(0, outputVolume * 100);
     this.uniforms.u_frequency.value = frequency;
     
@@ -305,15 +306,15 @@ export class ThreeOrb {
   private animate = () => {
     if (!this.renderer) return;
 
-    // Update camera position based on mouse
+    // Cool camera effect - mouse tracking
     this.camera.position.x += (this.mouseX - this.camera.position.x) * 0.05;
     this.camera.position.y += (-this.mouseY - this.camera.position.y) * 0.05;
     this.camera.lookAt(this.scene.position);
 
-    // Update time uniform
+    // Update time uniform for animation
     this.uniforms.u_time.value = this.clock.getElapsedTime();
 
-    // Render
+    // Render with bloom
     this.bloomComposer.render();
 
     this.rafId = requestAnimationFrame(this.animate);
