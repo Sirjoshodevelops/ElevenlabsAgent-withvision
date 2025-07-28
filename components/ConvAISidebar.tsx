@@ -45,6 +45,7 @@ export function ConvAISidebar() {
   const [textInput, setTextInput] = React.useState("");
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const messageIdCounter = React.useRef(0);
 
   // OpenRouter API configuration
   const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
@@ -186,8 +187,9 @@ export function ConvAISidebar() {
   });
 
   const addChatMessage = (type: 'user' | 'agent' | 'system', content: string) => {
+    messageIdCounter.current += 1;
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${messageIdCounter.current}`,
       type,
       content,
       timestamp: new Date()
