@@ -200,6 +200,8 @@ export class Orb {
   public constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl2", {
       depth: false,
+    }
+    )
 
     const noise = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, noise);
@@ -250,6 +252,7 @@ export class Orb {
         this.resizeObserver.observe(parent, {
           box: "device-pixel-content-box",
         });
+      }
       console.error(this.gl.getProgramInfoLog(this.program));
     }
 
