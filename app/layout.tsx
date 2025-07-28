@@ -2,7 +2,6 @@ import type {Metadata} from "next";
 import "./globals.css";
 import {BackgroundWave} from "@/components/background-wave";
 import {ThemeProvider} from "@/components/theme-provider";
-import {ThemeToggle} from "@/components/theme-toggle";
 import { headers } from 'next/headers';
 
 export const metadata: Metadata = {

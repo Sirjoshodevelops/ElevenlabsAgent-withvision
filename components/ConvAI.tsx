@@ -43,20 +43,8 @@ export function ConvAI() {
   const [showChat, setShowChat] = React.useState(false);
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
-  const [isMobile, setIsMobile] = React.useState(false);
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Check for mobile device
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // OpenRouter API configuration
   const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
@@ -297,7 +285,7 @@ export function ConvAI() {
       console.error('❌ Error starting screen share:', error);
       alert('Failed to start screen sharing');
     }
-  }, [captureScreen]);
+  }, [captureScreen, stopScreenShare]);
 
   const stopScreenShare = useCallback(() => {
     console.log('🛑 Stopping screen share...');

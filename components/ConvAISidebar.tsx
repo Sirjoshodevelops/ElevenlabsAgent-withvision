@@ -6,7 +6,7 @@ import { useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversation } from "@11labs/react";
 import { cn } from "@/lib/utils";
-import { MessageCircle, X, Send, Monitor, MonitorOff } from "lucide-react";
+import { MessageCircle, Send, Monitor, MonitorOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -39,7 +39,6 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAISidebar() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
-  const [showChat, setShowChat] = React.useState(true); // Always open by default
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const screenStreamRef = React.useRef<MediaStream | null>(null);
@@ -284,7 +283,7 @@ export function ConvAISidebar() {
       console.error('❌ Error starting screen share:', error);
       alert('Failed to start screen sharing');
     }
-  }, [captureScreen]);
+  }, [captureScreen, stopScreenShare]);
 
   const stopScreenShare = useCallback(() => {
     console.log('🛑 Stopping screen share...');
