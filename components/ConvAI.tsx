@@ -335,7 +335,7 @@ export function ConvAI() {
             <div className={"flex flex-col gap-y-4 text-center"}>
               <div
                 className={cn(
-                  showChat ? "w-32 h-32 my-4 mx-auto" : "orb my-16 mx-12",
+                  showChat ? "w-32 h-32 my-4 mx-auto orb-compact" : "orb my-16 mx-12",
                   conversation.status === "connected" && conversation.isSpeaking
                     ? "orb-active animate-orb"
                     : conversation.status === "connected"
