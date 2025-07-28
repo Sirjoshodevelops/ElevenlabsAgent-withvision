@@ -318,10 +318,17 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center w-full" style={{backgroundImage: 'url(/div.inspect-element-1753709547269.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
+    <div className="fixed inset-0 flex justify-center items-center w-full">
+      <video 
+        autoPlay 
+        muted 
+        loop 
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        src="https://storage.googleapis.com/msgsndr/HOwttIKa3lqR9YAr7GIq/media/68877b33f9fb831ab9ebc0cf.mov"
+      />
       <div className="flex flex-col items-center transition-all duration-500 ease-in-out">
         {/* Main Interface Card */}
-        <Card className="rounded-3xl transition-all duration-500 ease-in-out w-[400px]">
+        <Card className="rounded-3xl transition-all duration-500 ease-in-out w-[400px] relative z-10">
           <CardContent>
             <CardHeader>
               <CardTitle className={"text-center"}>
