@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
-import { Orb } from './orb/Orb';
+import { ThreeOrb } from './orb/ThreeOrb';
 
 interface WebGLOrbProps {
   isActive: boolean;
@@ -12,15 +12,15 @@ interface WebGLOrbProps {
 
 export function WebGLOrb({ isActive, isSpeaking, inputVolume = 0, outputVolume = 0 }: WebGLOrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const orbRef = useRef<Orb | null>(null);
+  const orbRef = useRef<ThreeOrb | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     try {
-      orbRef.current = new Orb(canvasRef.current);
+      orbRef.current = new ThreeOrb(canvasRef.current);
     } catch (error) {
-      console.error('Failed to initialize WebGL orb:', error);
+      console.error('Failed to initialize Three.js orb:', error);
       return;
     }
 
@@ -37,14 +37,29 @@ export function WebGLOrb({ isActive, isSpeaking, inputVolume = 0, outputVolume =
     if (!orbRef.current) return;
 
     if (isSpeaking) {
-      // Speaking: Cyan to purple gradient with enhanced glow
+      // Speaking: Cyan to purple gradient with enhanced effects
       orbRef.current.updateColors("#00FFFF", "#FF00FF");
+      orbRef.current.updateParams({
+        threshold: 0.3,
+        strength: 1.5,
+        radius: 0.9
+      });
     } else if (isActive) {
-      // Active: Blue gradient with moderate glow
+      // Active: Blue gradient with moderate effects
       orbRef.current.updateColors("#2792DC", "#9CE6E6");
+      orbRef.current.updateParams({
+        threshold: 0.5,
+        strength: 0.8,
+        radius: 0.8
+      });
     } else {
-      // Inactive: Dark blue with subtle glow
+      // Inactive: Dark blue with subtle effects
       orbRef.current.updateColors("#1E3A8A", "#3B82F6");
+      orbRef.current.updateParams({
+        threshold: 0.7,
+        strength: 0.3,
+        radius: 0.6
+      });
     }
   }, [isActive, isSpeaking]);
 
