@@ -318,7 +318,7 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center w-full">
+    <div className="fixed inset-0 flex justify-center items-center w-full" style={{backgroundImage: 'url(/div.inspect-element-1753709547269.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
       <div className="flex flex-col items-center transition-all duration-500 ease-in-out">
         {/* Main Interface Card */}
         <Card className="rounded-3xl transition-all duration-500 ease-in-out w-[400px]">
