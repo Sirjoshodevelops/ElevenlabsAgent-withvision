@@ -60,10 +60,27 @@ export function ConvAISidebar() {
       console.log(`${timestamp()} 📊 Current state - isScreenSharing:`, isScreenSharing);
       console.log(`${timestamp()} 📊 Current state - capturedImage exists:`, !!capturedImage);
       console.log(`${timestamp()} 📊 Current state - capturedImage length:`, capturedImage?.length || 0);
+      console.log(`${timestamp()} 📊 Current state - screenStreamRef exists:`, !!screenStreamRef.current);
       console.log(`${timestamp()} 📊 OPENROUTER_API_KEY exists:`, !!OPENROUTER_API_KEY);
       
       // Add system message for debugging
       addChatMessage("system", `Vision tool called: "${image_prompt}"`);
+      
+      // If no image but screen sharing is active, try to capture immediately
+      if (!capturedImage && isScreenSharing && screenStreamRef.current) {
+        console.log(`${timestamp()} 🔄 No cached image but screen sharing active, capturing now...`);
+        addChatMessage("system", "📸 Capturing screen image...");
+        await captureScreen();
+        
+        // Wait a moment for capture to complete
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (!capturedImage) {
+          console.log(`${timestamp()} ❌ Still no image after immediate capture`);
+          addChatMessage("system", "❌ Failed to capture screen image");
+          return "I couldn't capture the screen image. Please try stopping and restarting screen sharing.";
+        }
+      }
       
       if (!capturedImage) {
         console.log(`${timestamp()} ❌ No captured image available`);
@@ -238,6 +255,7 @@ export function ConvAISidebar() {
   }, [conversation]);
 
   const captureScreen = useCallback(async () => {
+    console.log('📱 captureScreen called, screenStreamRef exists:', !!screenStreamRef.current);
     if (!screenStreamRef.current) return;
 
     try {
@@ -278,9 +296,13 @@ export function ConvAISidebar() {
         console.log('📸 Original size:', `${video.videoWidth}x${video.videoHeight}`);
         console.log('📸 Resized to:', `${canvas.width}x${canvas.height}`);
         console.log('📸 Image size:', Math.round(imageDataUrl.length / 1024), 'KB');
+        
+        // Add visual feedback
+        addChatMessage("system", `📸 Screen captured (${Math.round(imageDataUrl.length / 1024)}KB)`);
       }
     } catch (error) {
       console.error('❌ Error capturing screen:', error);
+      addChatMessage("system", `❌ Screen capture failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }, []);
 
