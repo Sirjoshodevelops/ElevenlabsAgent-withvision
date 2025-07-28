@@ -159,9 +159,9 @@ export function ConvAI() {
     },
     onMessage: message => {
       console.log(message);
-      if (message.type === "agent_response") {
+      if (message.type === "agent_response" || message.type === "agent_response_corrected") {
         addChatMessage("agent", message.message);
-      } else if (message.type === "user_transcript") {
+      } else if (message.type === "user_transcript" || message.type === "user_transcript_corrected") {
         addChatMessage("user", message.message);
       } else if (message.type === "agent_response_start") {
         // Agent started speaking
@@ -169,6 +169,14 @@ export function ConvAI() {
       } else if (message.type === "agent_response_end") {
         // Agent finished speaking
         console.log("Agent finished speaking");
+      } else if (message.type === "interruption") {
+        addChatMessage("system", "Conversation interrupted");
+      } else if (message.type === "ping") {
+        // Ignore ping messages
+        console.log("Received ping");
+      } else {
+        // Log any other message types for debugging
+        console.log("Unknown message type:", message.type, message);
       }
     },
   });
@@ -191,8 +199,8 @@ export function ConvAI() {
     setTextInput(""); // Clear input immediately for better UX
     
     try {
-      // Send text message to the 11Labs conversation
-      await conversation.sendMessage(messageToSend);
+      // Send text message using the correct method
+      await conversation.sendUserMessage(messageToSend);
     } catch (error) {
       console.error("Error sending message:", error);
       addChatMessage("system", "Failed to send message");
@@ -212,8 +220,9 @@ export function ConvAI() {
     
     try {
       const signedUrl = await getSignedUrl();
-      const conversationId = await conversation.startSession({ 
+      const conversationId = await conversation.startSession({
         signedUrl,
+        connectionType: "websocket",
         clientTools,
       });
       console.log("Conversation started with ID:", conversationId);
@@ -489,6 +498,7 @@ export function ConvAI() {
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                  onInput={() => conversation.sendUserActivity?.()}
                   className="flex-1 rounded-full"
                 />
                 <Button
