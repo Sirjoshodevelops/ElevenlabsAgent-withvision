@@ -1,246 +1,74 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+"use client";
 
-body {
-    font-family: -apple-system, "system-ui", sans-serif;
+import React, { useEffect, useRef } from 'react';
+import { Orb } from './orb/Orb';
+
+interface WebGLOrbProps {
+  isActive: boolean;
+  isSpeaking: boolean;
+  inputVolume?: number;
+  outputVolume?: number;
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 20 14.3% 4.1%;
-        --card: 0 0% 100%;
-        --card-foreground: 20 14.3% 4.1%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 20 14.3% 4.1%;
-        --primary: 262 83% 58%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 60 4.8% 95.9%;
-        --secondary-foreground: 24 9.8% 10%;
-        --muted: 60 4.8% 95.9%;
-        --muted-foreground: 25 5.3% 44.7%;
-        --accent: 60 4.8% 95.9%;
-        --accent-foreground: 24 9.8% 10%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 60 9.1% 97.8%;
-        --border: 20 5.9% 90%;
-        --input: 20 5.9% 90%;
-        --ring: 262 83% 58%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
+export function WebGLOrb({ isActive, isSpeaking, inputVolume = 0, outputVolume = 0 }: WebGLOrbProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const orbRef = useRef<Orb | null>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    try {
+      orbRef.current = new Orb(canvasRef.current);
+    } catch (error) {
+      console.error('Failed to initialize WebGL orb:', error);
+      return;
     }
 
-    .dark {
-        --background: 20 14.3% 4.1%;
-        --foreground: 60 9.1% 97.8%;
-        --card: 20 14.3% 4.1%;
-        --card-foreground: 60 9.1% 97.8%;
-        --popover: 20 14.3% 4.1%;
-        --popover-foreground: 60 9.1% 97.8%;
-        --primary: 263 70% 50%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 12 6.5% 15.1%;
-        --secondary-foreground: 60 9.1% 97.8%;
-        --muted: 12 6.5% 15.1%;
-        --muted-foreground: 24 5.4% 63.9%;
-        --accent: 12 6.5% 15.1%;
-        --accent-foreground: 60 9.1% 97.8%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 60 9.1% 97.8%;
-        --border: 12 6.5% 15.1%;
-        --input: 12 6.5% 15.1%;
-        --ring: 263 70% 50%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
-}
+    return () => {
+      if (orbRef.current) {
+        orbRef.current.dispose();
+        orbRef.current = null;
+      }
+    };
+  }, []);
 
-@layer utilities {
-    .bg-gradient-radial {
-        background: radial-gradient(var(--tw-gradient-stops));
-    }
-}
+  // Update colors based on state
+  useEffect(() => {
+    if (!orbRef.current) return;
 
-@layer base {
-    * {
-        @apply border-border;
+    if (isSpeaking) {
+      // Speaking: Cyan to purple gradient with enhanced glow
+      orbRef.current.updateColors("#00FFFF", "#FF00FF");
+    } else if (isActive) {
+      // Active: Blue gradient with moderate glow
+      orbRef.current.updateColors("#2792DC", "#9CE6E6");
+    } else {
+      // Inactive: Dark blue with subtle glow
+      orbRef.current.updateColors("#1E3A8A", "#3B82F6");
     }
+  }, [isActive, isSpeaking]);
 
-    body {
-        @apply bg-background text-foreground;
-    }
-}
+  // Update volume data
+  useEffect(() => {
+    if (!orbRef.current) return;
+    orbRef.current.updateVolume(inputVolume, outputVolume);
+  }, [inputVolume, outputVolume]);
 
-.orb::before {
-    content: '';
-    position: absolute;
-    top: -30%;
-    left: -30%;
-    width: 160%;
-    height: 160%;
-    background: 
-        radial-gradient(ellipse at 35% 35%, rgba(255, 255, 255, 0.6) 0%, transparent 25%),
-        radial-gradient(ellipse at 65% 65%, rgba(0, 255, 255, 0.5) 0%, transparent 30%),
-        radial-gradient(ellipse at 50% 20%, rgba(255, 200, 255, 0.4) 0%, transparent 35%),
-        conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.2), transparent, rgba(0, 255, 255, 0.15), transparent);
-    border-radius: 50%;
-    animation: swirl 12s infinite linear;
-}
-
-/* Enhanced particle effect with glass-like reflections */
-.orb::after {
-    content: '';
-    position: absolute;
-    top: 15%;
-    left: 15%;
-    width: 70%;
-    height: 70%;
-    background: 
-        radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 15%),
-        radial-gradient(ellipse at 80% 30%, rgba(0, 255, 255, 0.6) 0%, transparent 20%),
-        radial-gradient(ellipse at 60% 80%, rgba(255, 150, 255, 0.5) 0%, transparent 18%),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
-    border-radius: 50%;
-    animation: float 8s infinite ease-in-out;
-    opacity: 0.8;
-}
-
-/* Voice-reactive animation for active speaking */
-@keyframes voice-reactive {
-    0%, 100% {
-        transform: scale(1) rotate(0deg);
-        filter: brightness(1) saturate(1);
-    }
-    25% {
-        transform: scale(1.05) rotate(1deg);
-        filter: brightness(1.1) saturate(1.2);
-    }
-    50% {
-        transform: scale(1.08) rotate(0deg);
-        filter: brightness(1.2) saturate(1.3);
-    }
-    75% {
-        transform: scale(1.03) rotate(-1deg);
-        filter: brightness(1.1) saturate(1.1);
-    }
-}
-
-/* Ambient flow for idle state */
-@keyframes ambient-flow {
-    0% {
-        filter: hue-rotate(0deg) brightness(0.9);
-    }
-    25% {
-        filter: hue-rotate(10deg) brightness(1);
-    }
-    50% {
-        filter: hue-rotate(0deg) brightness(1.1);
-    }
-    75% {
-        filter: hue-rotate(-10deg) brightness(1);
-    }
-    100% {
-        filter: hue-rotate(0deg) brightness(0.9);
-    }
-}
-
-/* Enhanced keyframes for enhanced effects */
-@keyframes pulse-active {
-    0%, 100% {
-        transform: scale(1) rotate(0deg);
-        filter: brightness(1) saturate(1);
-    }
-    50% {
-        transform: scale(1.12) rotate(2deg);
-        filter: brightness(1.3) saturate(1.4);
-    }
-}
-
-@keyframes pulse-idle {
-    0%, 100% {
-        transform: scale(1) rotate(0deg);
-        filter: brightness(0.85) saturate(0.9);
-    }
-    50% {
-        transform: scale(1.06) rotate(1deg);
-        filter: brightness(1.1) saturate(1.1);
-    }
-}
-
-@keyframes glow-active {
-    0%, 100% {
-        box-shadow: 
-            0 0 80px rgba(0, 255, 255, 0.9),
-            0 0 160px rgba(0, 180, 255, 0.7),
-            0 0 240px rgba(0, 120, 255, 0.5),
-            inset 0 0 60px rgba(255, 255, 255, 0.3);
-    }
-    50% {
-        box-shadow: 
-            0 0 120px rgba(0, 255, 255, 1),
-            0 0 240px rgba(0, 200, 255, 0.9),
-            0 0 360px rgba(0, 150, 255, 0.7),
-            inset 0 0 100px rgba(255, 255, 255, 0.5);
-    }
-}
-
-@keyframes glow-idle {
-    0%, 100% {
-        box-shadow: 
-            0 0 40px rgba(0, 180, 255, 0.5),
-            0 0 80px rgba(0, 120, 200, 0.4),
-            inset 0 0 40px rgba(255, 255, 255, 0.15);
-    }
-    50% {
-        box-shadow: 
-            0 0 60px rgba(0, 200, 255, 0.6),
-            0 0 120px rgba(0, 140, 220, 0.5),
-            inset 0 0 60px rgba(255, 255, 255, 0.25);
-    }
-}
-
-@keyframes swirl {
-    0% {
-        transform: rotate(0deg) scale(1) skew(0deg);
-        opacity: 0.7;
-    }
-    25% {
-        transform: rotate(90deg) scale(1.05) skew(2deg);
-        opacity: 0.9;
-    }
-    50% {
-        transform: rotate(180deg) scale(1.1) skew(0deg);
-        opacity: 0.8;
-    }
-    75% {
-        transform: rotate(270deg) scale(1.05) skew(-2deg);
-        opacity: 0.9;
-    }
-    100% {
-        transform: rotate(360deg) scale(1) skew(0deg);
-        opacity: 0.7;
-    }
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg) scale(1);
-        opacity: 0.8;
-    }
-    33% {
-        transform: translateY(-8px) rotate(120deg) scale(1.02);
-        opacity: 1;
-    }
-    66% {
-        transform: translateY(4px) rotate(240deg) scale(0.98);
-        opacity: 0.9;
-    }
+  return (
+    <div className="relative">
+      <canvas
+        ref={canvasRef}
+        className={`w-60 h-60 transition-all duration-300 ${
+          isSpeaking 
+            ? 'drop-shadow-[0_0_40px_rgba(0,255,255,0.8)]' 
+            : isActive 
+            ? 'drop-shadow-[0_0_20px_rgba(39,146,220,0.6)]' 
+            : 'drop-shadow-[0_0_10px_rgba(30,58,138,0.4)]'
+        }`}
+        style={{
+          background: 'transparent',
+        }}
+      />
+    </div>
+  );
 }
