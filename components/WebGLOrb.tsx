@@ -79,7 +79,8 @@ body {
     }
 }
 
-
+.orb::before {
+    content: '';
     position: absolute;
     top: -30%;
     left: -30%;
