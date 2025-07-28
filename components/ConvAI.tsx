@@ -10,7 +10,11 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { WebGLOrb } from "@/components/WebGLOrb";
-// Removed GoogleGenAI import - using OpenRouter API instead
+
+interface VolumeData {
+  inputVolume: number;
+  outputVolume: number;
+}
 
 interface ChatMessage {
   id: string;
@@ -46,6 +50,7 @@ export function ConvAI() {
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const [isMobile, setIsMobile] = React.useState(false);
+  const [volumeData, setVolumeData] = React.useState<VolumeData>({ inputVolume: 0, outputVolume: 0 });
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const capturedImageRef = React.useRef<string | null>(null);
@@ -157,6 +162,15 @@ export function ConvAI() {
       console.log(error);
       addChatMessage("system", `Error: ${error instanceof Error ? error.message : error || "An error occurred"}`);
       alert("An error occurred during the conversation");
+    },
+    onModeChange: ({ mode }) => {
+      console.log("Mode changed:", mode);
+    },
+    onStatusChange: ({ status }) => {
+      console.log("Status changed:", status);
+    },
+    onVolumeChange: ({ inputVolume, outputVolume }) => {
+      setVolumeData({ inputVolume, outputVolume });
     },
     onMessage: message => {
       console.log(message);
@@ -361,6 +375,8 @@ export function ConvAI() {
                 <WebGLOrb
                   isActive={conversation.status === "connected"}
                   isSpeaking={conversation.isSpeaking}
+                  inputVolume={volumeData.inputVolume}
+                  outputVolume={volumeData.outputVolume}
                 />
               </div>
 
