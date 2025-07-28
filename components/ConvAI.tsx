@@ -31,7 +31,8 @@ async function requestMicrophonePermission() {
 async function getSignedUrl(): Promise<string> {
   const response = await fetch("/api/signed-url");
   if (!response.ok) {
-    throw Error("Failed to get signed url");
+    const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(`Failed to get signed URL: ${errorData.error || response.statusText}`);
   }
   const data = await response.json();
   return data.signedUrl;
@@ -203,18 +204,24 @@ export function ConvAI() {
   async function startConversation() {
     const hasPermission = await requestMicrophonePermission();
     if (!hasPermission) {
-      alert("No permission");
+      alert("Microphone permission is required to start the conversation");
       return;
     }
     
     addChatMessage("system", "Connecting to voice agent...");
     
-    const signedUrl = await getSignedUrl();
-    const conversationId = await conversation.startSession({ 
-      signedUrl,
-      clientTools,
-    });
-    console.log(conversationId);
+    try {
+      const signedUrl = await getSignedUrl();
+      const conversationId = await conversation.startSession({ 
+        signedUrl,
+        clientTools,
+      });
+      console.log("Conversation started with ID:", conversationId);
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+      addChatMessage("system", `Failed to connect: ${error instanceof Error ? error.message : "Unknown error"}`);
+      alert(`Failed to start conversation: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
   }
 
   const stopConversation = useCallback(async () => {
