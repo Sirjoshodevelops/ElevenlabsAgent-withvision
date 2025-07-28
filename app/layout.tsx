@@ -16,7 +16,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
 
     return (
         <html lang="en" className={"h-full w-full"}>
-        <body className={`antialiased w-full h-full lex flex-col`}>
+        <body className={`antialiased w-full h-full flex flex-col`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -24,12 +24,12 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             disableTransitionOnChange
         >
             {!isSidebar && (
-            <div className="flex flex-col flex-grow w-full items-center justify-center sm:px-4 bg-transparent">
-                <div className="relative z-10 bg-transparent">
-                    {children}
+                <div className="flex flex-col flex-grow w-full items-center justify-center sm:px-4 bg-transparent">
+                    <div className="relative z-10 bg-transparent">
+                        {children}
+                    </div>
+                    <BackgroundWave/>
                 </div>
-                <BackgroundWave/>
-            </div>
             )}
             {isSidebar && children}
         </ThemeProvider>
