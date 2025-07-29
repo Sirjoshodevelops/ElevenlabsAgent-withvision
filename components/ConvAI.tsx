@@ -10,6 +10,7 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { WebGLOrb } from "@/components/WebGLOrb";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface VolumeData {
   inputVolume: number;
@@ -46,7 +47,7 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAI() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
-  const [showChat, setShowChat] = React.useState(false);
+  const [showSettings, setShowSettings] = React.useState(false);
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const [isMobile, setIsMobile] = React.useState(false);
@@ -380,31 +381,23 @@ export function ConvAI() {
             {/* Glassmorphism Bento Grid - 4 buttons */}
             <div className="mx-4 mb-4">
               <div className="grid grid-cols-2 gap-3">
-                {/* Start Conversation Button */}
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                  <Button
-                    variant="ghost"
-                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
-                    disabled={conversation !== null && conversation.status === "connected"}
-                    onClick={startConversation}
-                  >
-                    <div className="text-2xl">▶️</div>
-                    <span className="text-xs font-medium">Start conversation</span>
-                  </Button>
-                </div>
+                {/* Start Conversation Button - Original Design */}
+                <Button
+                  className="w-full h-16 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={conversation !== null && conversation.status === "connected"}
+                  onClick={startConversation}
+                >
+                  Start conversation
+                </Button>
 
-                {/* End Conversation Button */}
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                  <Button
-                    variant="ghost"
-                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
-                    disabled={conversation === null}
-                    onClick={stopConversation}
-                  >
-                    <div className="text-2xl">⏹️</div>
-                    <span className="text-xs font-medium">End conversation</span>
-                  </Button>
-                </div>
+                {/* End Conversation Button - Original Design */}
+                <Button
+                  className="w-full h-16 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={conversation === null}
+                  onClick={stopConversation}
+                >
+                  End conversation
+                </Button>
 
                 {/* Screen Share Button */}
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
@@ -429,61 +422,110 @@ export function ConvAI() {
                   )}
                 </div>
 
-                {/* Chat Button */}
+                {/* Settings Button */}
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
                   <Button
                     variant="ghost"
                     className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
-                    onClick={() => setShowChat(!showChat)}
+                    onClick={() => setShowSettings(!showSettings)}
                   >
-                    <div className="text-2xl">💬</div>
-                    <span className="text-xs font-medium">{showChat ? "Hide Chat" : "Show Chat"}</span>
+                    <div className="text-2xl">⚙️</div>
+                    <span className="text-xs font-medium">Settings</span>
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Chat Section - At Bottom */}
-            {showChat && (
-              <div className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-md rounded-xl p-4 mx-4 mb-4 border border-gray-700/50">
+            {/* Settings Panel */}
+            {showSettings && (
+              <div className="bg-gray-900/50 backdrop-blur-md rounded-xl p-4 mx-4 mb-4 border border-gray-700/50">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-white">Chat & Transcripts</h3>
+                  <h3 className="text-sm font-semibold text-white">Settings</h3>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setShowChat(false)}
+                    onClick={() => setShowSettings(false)}
                     className="h-6 w-6 rounded-full text-gray-400 hover:text-white"
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
                 
-                <ScrollArea className="flex-1 pr-3 mb-3 max-h-48">
-                  <div className="space-y-2">
-                    {chatMessages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={cn(
-                          "p-2 rounded-lg text-xs max-w-[85%] break-words",
-                          message.type === "user" && "bg-primary text-primary-foreground ml-auto",
-                          message.type === "agent" && "bg-gray-700 text-white mr-auto",
-                          message.type === "system" && "bg-yellow-900 text-yellow-100 mx-auto text-center text-xs max-w-full"
-                        )}
-                      >
-                        <div className="font-medium text-xs opacity-70 mb-1">
-                          {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
-                        </div>
-                        <div className="leading-relaxed">{message.content}</div>
-                      </div>
-                    ))}
-                    {chatMessages.length === 0 && (
-                      <div className="text-center text-gray-400 text-xs py-6">
-                        <MessageCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                        <p>Start a conversation to see messages here</p>
-                      </div>
-                    )}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white">Theme</span>
+                    <ThemeToggle />
                   </div>
-                </ScrollArea>
+                </div>
+              </div>
+            )}
+
+            {/* Chat Section - Always Visible at Bottom */}
+            <div className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-md rounded-xl p-4 mx-4 mb-4 border border-gray-700/50">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-white">Chat & Transcripts</h3>
+              </div>
+              
+              <ScrollArea className="flex-1 pr-3 mb-3 max-h-48">
+                <div className="space-y-2">
+                  {chatMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={cn(
+                        "p-2 rounded-lg text-xs max-w-[85%] break-words",
+                        message.type === "user" && "bg-primary text-primary-foreground ml-auto",
+                        message.type === "agent" && "bg-gray-700 text-white mr-auto",
+                        message.type === "system" && "bg-yellow-900 text-yellow-100 mx-auto text-center text-xs max-w-full"
+                      )}
+                    >
+                      <div className="font-medium text-xs opacity-70 mb-1">
+                        {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
+                      </div>
+                      <div className="leading-relaxed">{message.content}</div>
+                    </div>
+                  ))}
+                  {chatMessages.length === 0 && (
+                    <div className="text-center text-gray-400 text-xs py-6">
+                      <MessageCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                      <p>Start a conversation to see messages here</p>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+              
+              {conversation.status === "connected" && (
+                <div className="flex gap-2 pt-3 border-t border-gray-700">
+                  <Input
+                    placeholder="Type a message..."
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                    onInput={() => conversation.sendUserActivity?.()}
+                    className="flex-1 rounded-full text-xs h-8 bg-gray-800 border-gray-600 text-white"
+                  />
+                  <Button
+                    size="icon"
+                    onClick={sendTextMessage}
+                    disabled={!textInput.trim()}
+                    className="rounded-full h-8 w-8"
+                  >
+                    <Send className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+              
+              {conversation.status !== "connected" && (
+                <div className="pt-3 border-t border-gray-700 text-center text-xs text-gray-400">
+                  Connect to start chatting
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
                 
                 {conversation.status === "connected" && (
                   <div className="flex gap-2 pt-3 border-t border-gray-700">
