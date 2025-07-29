@@ -140,7 +140,7 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       ctx.fill();
       
       // Add center pulse effect
-      className="fixed object-cover inset-0 w-full h-full z-[-1] hidden md:block pointer-events-none opacity-75"
+      {
         const pulseRadius = 20 + Math.sin(time * 0.1) * 3 + (activityLevel * 10);
         ctx.beginPath();
         ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
