@@ -95,31 +95,31 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
         const y2 = centerY + Math.sin(angle) * outerRadius;
         
         // Set color based on state
-        let color = '#374151'; // Gray for inactive
-        let centerColor = '#374151';
+        let color = '#4B5563'; // Gray for inactive
+        let centerColor = '#4B5563';
         
         if (isSpeaking) {
           // Dynamic colors based on output volume when agent is speaking
           const intensity = Math.min(1, outputVolume * 3);
           if (intensity > 0.7) {
-            color = '#8B5CF6'; // Purple for high activity
-            centerColor = '#8B5CF6';
+            color = '#C084FC'; // Bright purple for high activity
+            centerColor = '#C084FC';
           } else if (intensity > 0.4) {
-            color = '#3B82F6'; // Blue for medium activity
-            centerColor = '#3B82F6';
+            color = '#A855F7'; // Medium purple for medium activity
+            centerColor = '#A855F7';
           } else {
-            color = '#06B6D4'; // Cyan for low activity
-            centerColor = '#06B6D4';
+            color = '#8B5CF6'; // Purple for low activity
+            centerColor = '#8B5CF6';
           }
         } else if (isActive) {
           // Subtle color when listening (based on input volume)
           const inputIntensity = Math.min(1, inputVolume * 2);
           if (inputIntensity > 0.3) {
-            color = '#10B981'; // Green when user is speaking
-            centerColor = '#10B981';
+            color = '#A78BFA'; // Light purple when user is speaking
+            centerColor = '#A78BFA';
           } else {
-            color = '#6B7280'; // Light gray for active listening
-            centerColor = '#6B7280';
+            color = '#7C3AED'; // Purple for active listening
+            centerColor = '#7C3AED';
           }
         }
         
@@ -136,7 +136,7 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       // Draw center circle
       ctx.beginPath();
       ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
-      ctx.fillStyle = isActive ? (isSpeaking ? '#3B82F6' : '#6B7280') : '#374151';
+      ctx.fillStyle = isActive ? (isSpeaking ? '#8B5CF6' : '#7C3AED') : '#4B5563';
       ctx.fill();
       
       // Add center pulse effect
@@ -144,7 +144,7 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
         const pulseRadius = 20 + Math.sin(time * 0.1) * 3 + (activityLevel * 10);
         ctx.beginPath();
         ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = isSpeaking ? '#3B82F6' : '#6B7280';
+        ctx.strokeStyle = isSpeaking ? '#A855F7' : '#8B5CF6';
         ctx.lineWidth = 1;
         ctx.globalAlpha = 0.3;
         ctx.stroke();
