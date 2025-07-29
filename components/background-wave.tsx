@@ -138,13 +138,6 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
       ctx.fillStyle = isActive ? (isSpeaking ? '#3B82F6' : '#6B7280') : '#374151';
       ctx.fill();
-        {/* Same video as MP4 format fallback */}
-        <source 
-          src="https://storage.googleapis.com/msgsndr/HOwttIKa3lqR9YAr7GIq/media/6888c425fe5a779f8a5b2a11.mov" 
-          type="video/mp4"
-        />
-        ctx.globalAlpha = 1;
-      }
       
       time++;
       animationRef.current = requestAnimationFrame(animate);
