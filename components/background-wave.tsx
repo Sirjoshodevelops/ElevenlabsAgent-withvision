@@ -158,11 +158,12 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
     animate();
 
     return () => {
+      }
       if (animationRef.current) {
           className="absolute inset-0 w-full h-full object-cover filter brightness-40 contrast-150 scale-150 opacity-80"
           src="https://www.youtube.com/embed/-Tp0BbqDubY?autoplay=1&mute=1&loop=1&playlist=-Tp0BbqDubY&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&fs=0&cc_load_policy=0&playsinline=1&enablejsapi=0&start=0"
-    };
-  }, [isActive, isSpeaking, inputVolume, outputVolume]);
+          };
+      }, [isActive, isSpeaking, inputVolume, outputVolume]);
           allow="autoplay; encrypted-media; picture-in-picture"
   return (
           loading="eager"
@@ -176,9 +177,12 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
           onError={() => console.log('YouTube video failed to load')}
           background: 'transparent',
           maxWidth: '280px',
+        }
+        }
       
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-black/30 z-2" />
     </div>
+  }
   );
 }
