@@ -159,6 +159,7 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
     animate();
 
     return () => {
+      }
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -178,4 +179,7 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       />
     </div>
   );
+}
+  }
+  )
 }
