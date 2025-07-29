@@ -138,19 +138,15 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
       ctx.fillStyle = isActive ? (isSpeaking ? 'hsl(270, 100%, 70%)' : 'hsl(260, 20%, 40%)') : 'hsl(260, 10%, 25%)';
       ctx.fill();
-  return (
-    <div className="relative w-full h-full flex items-center justify-center p-4">
-      <BackgroundWave />
-      <main className="relative z-10 w-full h-full max-w-[400px]">
-        <ConvAI />
-      </main>
-    </div>
-  );
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = 0.3;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
+      
+      // Draw center circle outline
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+      ctx.strokeStyle = isActive ? (isSpeaking ? 'hsl(270, 100%, 70%)' : 'hsl(260, 20%, 40%)') : 'hsl(260, 10%, 25%)';
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.3;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
       
       time++;
       animationRef.current = requestAnimationFrame(animate);
