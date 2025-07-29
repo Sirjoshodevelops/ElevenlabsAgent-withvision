@@ -10,6 +10,7 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { WebGLOrb } from "@/components/WebGLOrb";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface VolumeData {
   inputVolume: number;
