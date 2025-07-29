@@ -136,6 +136,13 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       // Draw center circle
       ctx.beginPath();
       ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
+export function ConvAI() {
+  // Mock props for now - these would come from actual ConvAI integration
+  const isActive = false;
+  const isSpeaking = false;
+  const inputVolume = 0;
+  const outputVolume = 0;
+
       ctx.fillStyle = isActive ? (isSpeaking ? '#3B82F6' : '#6B7280') : '#374151';
       ctx.fill();
       
