@@ -377,9 +377,75 @@ export function ConvAI() {
               </div>
             </div>
 
-            {/* Chat Section - Integrated */}
+            {/* Glassmorphism Bento Grid - 4 buttons */}
+            <div className="mx-4 mb-4">
+              <div className="grid grid-cols-2 gap-3">
+                {/* Start Conversation Button */}
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
+                    disabled={conversation !== null && conversation.status === "connected"}
+                    onClick={startConversation}
+                  >
+                    <div className="text-2xl">▶️</div>
+                    <span className="text-xs font-medium">Start conversation</span>
+                  </Button>
+                </div>
+
+                {/* End Conversation Button */}
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
+                    disabled={conversation === null}
+                    onClick={stopConversation}
+                  >
+                    <div className="text-2xl">⏹️</div>
+                    <span className="text-xs font-medium">End conversation</span>
+                  </Button>
+                </div>
+
+                {/* Screen Share Button */}
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  {!isScreenSharing ? (
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
+                      onClick={startScreenShare}
+                    >
+                      <div className="text-2xl">🖥️</div>
+                      <span className="text-xs font-medium">Screen Share</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full flex flex-col items-center justify-center gap-2 text-red-400 hover:bg-transparent p-0"
+                      onClick={stopScreenShare}
+                    >
+                      <div className="text-2xl">🔴</div>
+                      <span className="text-xs font-medium">Stop Share</span>
+                    </Button>
+                  )}
+                </div>
+
+                {/* Chat Button */}
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white hover:bg-transparent p-0"
+                    onClick={() => setShowChat(!showChat)}
+                  >
+                    <div className="text-2xl">💬</div>
+                    <span className="text-xs font-medium">{showChat ? "Hide Chat" : "Show Chat"}</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Section - At Bottom */}
             {showChat && (
-              <div className="flex-1 flex flex-col bg-gray-900 rounded-xl p-4 mx-4 mb-4">
+              <div className="flex-1 flex flex-col bg-gray-900/50 backdrop-blur-md rounded-xl p-4 mx-4 mb-4 border border-gray-700/50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-white">Chat & Transcripts</h3>
                   <Button
@@ -447,82 +513,6 @@ export function ConvAI() {
                 )}
               </div>
             )}
-
-            <Button
-              variant="default"
-              className="rounded-full mx-4 bg-purple-600 hover:bg-purple-700"
-              size="sm"
-              disabled={
-                conversation !== null && conversation.status === "connected"
-              }
-              onClick={startConversation}
-            >
-              Start conversation
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full mx-4 border-gray-600 text-white hover:bg-gray-800"
-              size="sm"
-              disabled={conversation === null}
-              onClick={stopConversation}
-            >
-              End conversation
-            </Button>
-            
-            {/* Compact feature grid */}
-            <div className="border-t border-gray-700 pt-3 mt-3 mx-4">
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {/* Screen Share Card */}
-                <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center justify-center min-h-[80px] border border-gray-700">
-                  <div className="text-lg mb-1">🖥️</div>
-                  <p className="text-xs text-gray-400 mb-2 text-center leading-tight">
-                    Screen Share
-                  </p>
-                  {!isScreenSharing ? (
-                    <Button
-                      variant="secondary"
-                      className="rounded-full text-xs bg-gray-700 hover:bg-gray-600 text-white"
-                      size="xs"
-                      onClick={startScreenShare}
-                    >
-                      Start
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="destructive"
-                      className="rounded-full text-xs bg-red-600 hover:bg-red-700"
-                      size="xs"
-                      onClick={stopScreenShare}
-                    >
-                      Stop
-                    </Button>
-                  )}
-                  {isScreenSharing && (
-                    <div className="mt-1">
-                      <p className="text-xs text-green-400">
-                        🟢 Active
-                      </p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Chat Card */}
-                <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center justify-center min-h-[80px] border border-gray-700">
-                  <div className="text-lg mb-1">💬</div>
-                  <p className="text-xs text-gray-400 mb-2 text-center leading-tight">
-                    Chat
-                  </p>
-                  <Button
-                    variant="ghost"
-                    className="rounded-full text-xs text-gray-300 hover:text-white hover:bg-gray-700"
-                    size="xs"
-                    onClick={() => setShowChat(!showChat)}
-                  >
-                    {showChat ? "Hide" : "Show"}
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
