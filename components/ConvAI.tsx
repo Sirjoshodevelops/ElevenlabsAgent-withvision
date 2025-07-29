@@ -10,7 +10,6 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { WebGLOrb } from "@/components/WebGLOrb";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 interface VolumeData {
   inputVolume: number;
@@ -47,11 +46,12 @@ async function getSignedUrl(): Promise<string> {
 export function ConvAI() {
   const [isScreenSharing, setIsScreenSharing] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
-  const [showSettings, setShowSettings] = React.useState(false);
+  const [showChat, setShowChat] = React.useState(false);
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = React.useState("");
   const [isMobile, setIsMobile] = React.useState(false);
   const [volumeData, setVolumeData] = React.useState<VolumeData>({ inputVolume: 0, outputVolume: 0 });
+  const [showSettings, setShowSettings] = React.useState(false);
   const screenStreamRef = React.useRef<MediaStream | null>(null);
   const captureIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const capturedImageRef = React.useRef<string | null>(null);
@@ -520,41 +520,6 @@ export function ConvAI() {
                 </div>
               )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-                
-                {conversation.status === "connected" && (
-                  <div className="flex gap-2 pt-3 border-t border-gray-700">
-                    <Input
-                      placeholder="Type a message..."
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
-                      onInput={() => conversation.sendUserActivity?.()}
-                      className="flex-1 rounded-full text-xs h-8 bg-gray-800 border-gray-600 text-white"
-                    />
-                    <Button
-                      size="icon"
-                      onClick={sendTextMessage}
-                      disabled={!textInput.trim()}
-                      className="rounded-full h-8 w-8"
-                    >
-                      <Send className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
-                
-                {conversation.status !== "connected" && (
-                  <div className="pt-3 border-t border-gray-700 text-center text-xs text-gray-400">
-                    Connect to start chatting
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
