@@ -352,26 +352,22 @@ export function ConvAI() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center w-full">
-      <div className={`flex transition-all duration-500 ease-in-out ${
-        showChat ? 'gap-6 scale-105' : 'gap-0'
-      }`}>
-        {/* Main Interface Card */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out ${
-          showChat ? 'w-96' : 'w-auto'
-        }`}>
-          <CardContent>
-            <CardHeader>
-              <CardTitle className={"text-center"}>
-                {conversation.status === "connected"
-                  ? conversation.isSpeaking
-                    ? `Agent is speaking`
-                    : "Agent is listening"
-                  : "Disconnected"}
-              </CardTitle>
-            </CardHeader>
-            <div className={"flex flex-col gap-y-4 text-center"}>
-              <div className="flex justify-center my-8">
+    <div className="flex flex-col w-full h-full max-w-[400px] mx-auto">
+      {/* Main Interface Card */}
+      <Card className="rounded-3xl w-full h-full flex flex-col bg-black text-white border-gray-800">
+        <CardContent>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-center text-sm text-white">
+              {conversation.status === "connected"
+                ? conversation.isSpeaking
+                  ? `Agent is speaking`
+                  : "Agent is listening"
+                : "Disconnected"}
+            </CardTitle>
+          </CardHeader>
+          <div className="flex flex-col gap-y-4 text-center flex-1">
+            <div className="flex justify-center my-4">
+              <div className="w-64 h-64 bg-gray-900 rounded-lg flex items-center justify-center">
                 <WebGLOrb
                   isActive={conversation.status === "connected"}
                   isSpeaking={conversation.isSpeaking}
@@ -379,160 +375,157 @@ export function ConvAI() {
                   outputVolume={volumeData.outputVolume}
                 />
               </div>
+            </div>
 
-              <Button
-                variant={"default"}
-                className={"rounded-full"}
-                size={"lg"}
-                disabled={
-                  conversation !== null && conversation.status === "connected"
-                }
-                onClick={startConversation}
-              >
-                Start conversation
-              </Button>
-              <Button
-                variant={"outline"}
-                className={"rounded-full"}
-                size={"lg"}
-                disabled={conversation === null}
-                onClick={stopConversation}
-              >
-                End conversation
-              </Button>
-              
-              {/* Bento-style grid for additional features */}
-              <div className="border-t pt-4 mt-4">
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Screen Share Card */}
-                  <div className="bg-muted/50 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[120px] border border-border/50">
-                    <div className="text-2xl mb-2">🖥️</div>
-                    <p className="text-xs text-muted-foreground mb-3 text-center leading-tight">
-                      Share Your Screen
-                    </p>
-                    {!isScreenSharing ? (
-                      <Button
-                        variant={"secondary"}
-                        className={"rounded-full text-xs"}
-                        size={"sm"}
-                        onClick={startScreenShare}
+            {/* Chat Section - Integrated */}
+            {showChat && (
+              <div className="flex-1 flex flex-col bg-gray-900 rounded-xl p-4 mx-4 mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-white">Chat & Transcripts</h3>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowChat(false)}
+                    className="h-6 w-6 rounded-full text-gray-400 hover:text-white"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <ScrollArea className="flex-1 pr-3 mb-3 max-h-48">
+                  <div className="space-y-2">
+                    {chatMessages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={cn(
+                          "p-2 rounded-lg text-xs max-w-[85%] break-words",
+                          message.type === "user" && "bg-primary text-primary-foreground ml-auto",
+                          message.type === "agent" && "bg-gray-700 text-white mr-auto",
+                          message.type === "system" && "bg-yellow-900 text-yellow-100 mx-auto text-center text-xs max-w-full"
+                        )}
                       >
-                        Start Share
-                      </Button>
-                    ) : (
-                      <Button
-                        variant={"destructive"}
-                        className={"rounded-full text-xs"}
-                        size={"sm"}
-                        onClick={stopScreenShare}
-                      >
-                        Stop Share
-                      </Button>
-                    )}
-                    {isScreenSharing && (
-                      <div className="mt-2 text-center">
-                        <p className="text-xs text-green-600">
-                          🟢 Active
-                        </p>
+                        <div className="font-medium text-xs opacity-70 mb-1">
+                          {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
+                        </div>
+                        <div className="leading-relaxed">{message.content}</div>
+                      </div>
+                    ))}
+                    {chatMessages.length === 0 && (
+                      <div className="text-center text-gray-400 text-xs py-6">
+                        <MessageCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                        <p>Start a conversation to see messages here</p>
                       </div>
                     )}
                   </div>
-                  
-                  {/* Chat Card */}
-                  <div className="bg-muted/50 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[120px] border border-border/50">
-                    <div className="text-2xl mb-2">💬</div>
-                    <p className="text-xs text-muted-foreground mb-3 text-center leading-tight">
-                      Chat & Transcripts
-                    </p>
+                </ScrollArea>
+                
+                {conversation.status === "connected" && (
+                  <div className="flex gap-2 pt-3 border-t border-gray-700">
+                    <Input
+                      placeholder="Type a message..."
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
+                      onInput={() => conversation.sendUserActivity?.()}
+                      className="flex-1 rounded-full text-xs h-8 bg-gray-800 border-gray-600 text-white"
+                    />
                     <Button
-                      variant={"ghost"}
-                      className={"rounded-full text-xs"}
-                      size={"sm"}
-                      onClick={() => setShowChat(!showChat)}
+                      size="icon"
+                      onClick={sendTextMessage}
+                      disabled={!textInput.trim()}
+                      className="rounded-full h-8 w-8"
                     >
-                      {showChat ? "Hide Chat" : "Show Chat"}
+                      <Send className="h-3 w-3" />
                     </Button>
                   </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Chat Panel - Unified with Main Interface */}
-        <Card className={`rounded-3xl transition-all duration-500 ease-in-out transform ${
-          showChat 
-            ? 'w-96 opacity-100 translate-x-0 scale-100' 
-            : 'w-0 opacity-0 -translate-x-full scale-95 pointer-events-none'
-        } flex flex-col overflow-hidden`}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
-            <CardTitle className="text-lg font-semibold">Chat & Transcripts</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowChat(false)}
-              className="h-8 w-8 rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-hidden">
-            <ScrollArea className="flex-1 pr-4 mb-4">
-              <div className="space-y-3">
-                {chatMessages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={cn(
-                      "p-3 rounded-lg text-sm max-w-[85%] break-words",
-                      message.type === "user" && "bg-primary text-primary-foreground ml-auto",
-                      message.type === "agent" && "bg-muted mr-auto",
-                      message.type === "system" && "bg-yellow-100 dark:bg-yellow-900 mx-auto text-center text-xs max-w-full"
-                    )}
-                  >
-                    <div className="font-medium text-xs opacity-70 mb-1">
-                      {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
-                    </div>
-                    <div className="leading-relaxed">{message.content}</div>
-                  </div>
-                ))}
-                {chatMessages.length === 0 && (
-                  <div className="text-center text-muted-foreground text-sm py-8">
-                    <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>Start a conversation to see messages here</p>
+                )}
+                
+                {conversation.status !== "connected" && (
+                  <div className="pt-3 border-t border-gray-700 text-center text-xs text-gray-400">
+                    Connect to start chatting
                   </div>
                 )}
               </div>
-            </ScrollArea>
-            
-            {conversation.status === "connected" && (
-              <div className="flex gap-2 pt-4 border-t flex-shrink-0">
-                <Input
-                  placeholder="Type a message..."
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
-                  onInput={() => conversation.sendUserActivity?.()}
-                  className="flex-1 rounded-full"
-                />
-                <Button
-                  size="icon"
-                  onClick={sendTextMessage}
-                  disabled={!textInput.trim()}
-                  className="rounded-full"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
             )}
+
+            <Button
+              variant="default"
+              className="rounded-full mx-4 bg-purple-600 hover:bg-purple-700"
+              size="sm"
+              disabled={
+                conversation !== null && conversation.status === "connected"
+              }
+              onClick={startConversation}
+            >
+              Start conversation
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-full mx-4 border-gray-600 text-white hover:bg-gray-800"
+              size="sm"
+              disabled={conversation === null}
+              onClick={stopConversation}
+            >
+              End conversation
+            </Button>
             
-            {conversation.status !== "connected" && (
-              <div className="pt-4 border-t text-center text-sm text-muted-foreground flex-shrink-0">
-                Connect to start chatting
+            {/* Compact feature grid */}
+            <div className="border-t border-gray-700 pt-3 mt-3 mx-4">
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {/* Screen Share Card */}
+                <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center justify-center min-h-[80px] border border-gray-700">
+                  <div className="text-lg mb-1">🖥️</div>
+                  <p className="text-xs text-gray-400 mb-2 text-center leading-tight">
+                    Screen Share
+                  </p>
+                  {!isScreenSharing ? (
+                    <Button
+                      variant="secondary"
+                      className="rounded-full text-xs bg-gray-700 hover:bg-gray-600 text-white"
+                      size="xs"
+                      onClick={startScreenShare}
+                    >
+                      Start
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="destructive"
+                      className="rounded-full text-xs bg-red-600 hover:bg-red-700"
+                      size="xs"
+                      onClick={stopScreenShare}
+                    >
+                      Stop
+                    </Button>
+                  )}
+                  {isScreenSharing && (
+                    <div className="mt-1">
+                      <p className="text-xs text-green-400">
+                        🟢 Active
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Chat Card */}
+                <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center justify-center min-h-[80px] border border-gray-700">
+                  <div className="text-lg mb-1">💬</div>
+                  <p className="text-xs text-gray-400 mb-2 text-center leading-tight">
+                    Chat
+                  </p>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full text-xs text-gray-300 hover:text-white hover:bg-gray-700"
+                    size="xs"
+                    onClick={() => setShowChat(!showChat)}
+                  >
+                    {showChat ? "Hide" : "Show"}
+                  </Button>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
