@@ -6,10 +6,10 @@ import { useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversation } from "@11labs/react";
 import { cn } from "@/lib/utils";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Mic, MicOff, Monitor, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { WebGLOrb } from "@/components/WebGLOrb";
+import { AudioVisualizer } from "@/components/AudioVisualizer";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 interface VolumeData {
@@ -356,27 +356,23 @@ export function ConvAI() {
   return (
     <div className="flex flex-col w-full h-full max-w-[400px] mx-auto">
       {/* Main Interface Card */}
-      <Card className="rounded-3xl w-full h-full flex flex-col bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 text-white relative overflow-hidden">
-        {/* Ambient Background Glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-cyan-500/5 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <Card className="rounded-none w-full h-full flex flex-col bg-black border-0 shadow-none text-white relative overflow-hidden">
         
         <CardContent>
           <CardHeader className="pb-4">
-            <CardTitle className="text-center text-sm font-medium text-white/90 tracking-wide relative z-10">
+            <CardTitle className="text-center text-xs font-normal text-white/60 uppercase tracking-widest relative z-10">
               {conversation.status === "connected"
                 ? conversation.isSpeaking
-                  ? `Agent is speaking`
-                  : "Agent is listening"
+                  ? "Agent Speaking"
+                  : "Listening"
                 : "Disconnected"}
             </CardTitle>
           </CardHeader>
-          <div className="flex flex-col gap-y-6 text-center flex-1 relative z-10">
-            <div className="flex justify-center my-4">
-              <div className="w-64 h-64 bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner flex items-center justify-center relative overflow-hidden">
-                {/* Orb Container Glow */}
-                <div className="absolute inset-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl blur-sm" />
-                <WebGLOrb
+          <div className="flex flex-col gap-y-4 text-center flex-1 relative z-10">
+            {/* Audio Visualizer Section */}
+            <div className="flex justify-center my-6">
+              <div className="w-72 h-72 bg-gray-950 rounded-none border border-gray-800 flex items-center justify-center relative overflow-hidden">
+                <AudioVisualizer
                   isActive={conversation.status === "connected"}
                   isSpeaking={conversation.isSpeaking}
                   inputVolume={volumeData.inputVolume}
@@ -385,80 +381,59 @@ export function ConvAI() {
               </div>
             </div>
 
-            {/* Premium Button Grid */}
-            <div className="mx-4 mb-6">
+            {/* Button Grid */}
+            <div className="mx-6 mb-4">
               <div className="grid grid-cols-2 gap-4">
-                {/* Start Conversation Button - Original Design */}
+                {/* Start Conversation Button */}
                 <Button
-                  className="w-full h-16 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 hover:from-purple-700 hover:via-purple-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border border-white/10"
+                  className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-none transition-all duration-200 border border-gray-700 hover:border-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-sm"
                   disabled={conversation !== null && conversation.status === "connected"}
                   onClick={startConversation}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
-                    Start conversation
-                  </div>
+                  <Mic className="w-4 h-4 mr-2" />
+                  Start
                 </Button>
 
-                {/* End Conversation Button - Original Design */}
+                {/* End Conversation Button */}
                 <Button
-                  className="w-full h-16 bg-gradient-to-r from-slate-600 via-slate-500 to-slate-700 hover:from-slate-700 hover:via-slate-600 hover:to-slate-800 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-slate-500/25 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border border-white/10"
+                  className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-none transition-all duration-200 border border-gray-700 hover:border-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-sm"
                   disabled={conversation === null}
                   onClick={stopConversation}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-400 rounded-sm" />
-                    End conversation
-                  </div>
+                  <MicOff className="w-4 h-4 mr-2" />
+                  Stop
                 </Button>
 
                 {/* Screen Share Button */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                  {!isScreenSharing ? (
-                    <Button
-                      variant="ghost"
-                      className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/80 hover:text-white hover:bg-transparent p-0 transition-all duration-200"
-                      onClick={startScreenShare}
-                    >
-                      <div className="text-2xl group-hover:scale-110 transition-transform duration-200">🖥️</div>
-                      <span className="text-xs font-medium tracking-wide">Screen Share</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      className="w-full h-full flex flex-col items-center justify-center gap-2 text-red-400 hover:text-red-300 hover:bg-transparent p-0 transition-all duration-200"
-                      onClick={stopScreenShare}
-                    >
-                      <div className="text-2xl animate-pulse">🔴</div>
-                      <span className="text-xs font-medium tracking-wide">Stop Share</span>
-                    </Button>
-                  )}
-                </div>
+                <Button
+                  className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-none transition-all duration-200 border border-gray-700 hover:border-gray-600 text-sm"
+                  onClick={isScreenSharing ? stopScreenShare : startScreenShare}
+                >
+                  <Monitor className="w-4 h-4 mr-2" />
+                  {isScreenSharing ? "Stop" : "Share"}
+                </Button>
 
                 {/* Settings Button */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                  <Button
-                    variant="ghost"
-                    className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/80 hover:text-white hover:bg-transparent p-0 transition-all duration-200"
-                    onClick={() => setShowSettings(!showSettings)}
-                  >
-                    <div className="text-2xl group-hover:rotate-90 transition-transform duration-300">⚙️</div>
-                    <span className="text-xs font-medium tracking-wide">Settings</span>
-                  </Button>
-                </div>
+                <Button
+                  className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-none transition-all duration-200 border border-gray-700 hover:border-gray-600 text-sm"
+                  onClick={() => setShowSettings(!showSettings)}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </Button>
               </div>
             </div>
 
             {/* Settings Panel */}
             {showSettings && (
-              <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-6 mx-4 mb-6 border border-white/10 shadow-2xl animate-in slide-in-from-top-2 duration-300">
+              <div className="bg-gray-950 rounded-none p-4 mx-6 mb-4 border border-gray-800 animate-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-white tracking-wide">Settings</h3>
+                  <h3 className="text-xs font-medium text-white uppercase tracking-wider">Settings</h3>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setShowSettings(false)}
-                    className="h-6 w-6 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+                    className="h-6 w-6 rounded-none text-white/60 hover:text-white hover:bg-gray-800 transition-all duration-200"
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -466,7 +441,7 @@ export function ConvAI() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/90 font-medium">Theme</span>
+                    <span className="text-xs text-white/70 font-medium uppercase tracking-wide">Theme</span>
                     <ThemeToggle />
                   </div>
                 </div>
@@ -474,64 +449,64 @@ export function ConvAI() {
             )}
 
             {/* Chat Section - Always Visible at Bottom */}
-            <div className="flex-1 flex flex-col bg-slate-900/40 backdrop-blur-xl rounded-2xl p-6 mx-4 mb-4 border border-white/10 shadow-xl min-h-[200px]">
+            <div className="flex-1 flex flex-col bg-gray-950 rounded-none p-4 mx-6 mb-4 border border-gray-800 min-h-[200px]">
               <div className="mb-3">
-                <h3 className="text-sm font-semibold text-white tracking-wide flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  Chat & Transcripts
+                <h3 className="text-xs font-medium text-white uppercase tracking-wider flex items-center gap-2">
+                  <div className="w-1 h-1 bg-white rounded-full" />
+                  Transcripts
                 </h3>
               </div>
               
-              <ScrollArea className="flex-1 pr-3 mb-4 max-h-48">
+              <ScrollArea className="flex-1 pr-2 mb-4 max-h-48">
                 <div className="space-y-2">
                   {chatMessages.map((message) => (
                     <div
                       key={message.id}
                       className={cn(
-                        "p-3 rounded-xl text-xs max-w-[85%] break-words backdrop-blur-sm transition-all duration-200 hover:scale-[1.02]",
-                        message.type === "user" && "bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white ml-auto border border-white/10 shadow-lg",
-                        message.type === "agent" && "bg-slate-700/60 text-white mr-auto border border-white/10 shadow-lg",
-                        message.type === "system" && "bg-amber-900/60 text-amber-100 mx-auto text-center text-xs max-w-full border border-amber-500/20 shadow-lg"
+                        "p-2 rounded-none text-xs max-w-[85%] break-words transition-all duration-200",
+                        message.type === "user" && "bg-gray-800 text-white ml-auto border border-gray-700",
+                        message.type === "agent" && "bg-gray-900 text-white mr-auto border border-gray-700",
+                        message.type === "system" && "bg-gray-800 text-gray-300 mx-auto text-center text-xs max-w-full border border-gray-700"
                       )}
                     >
-                      <div className="font-medium text-xs opacity-80 mb-1 tracking-wide">
+                      <div className="font-medium text-xs opacity-60 mb-1 tracking-wide">
                         {message.type === "user" ? "You" : message.type === "agent" ? "Agent" : "System"} • {message.timestamp.toLocaleTimeString()}
                       </div>
-                      <div className="leading-relaxed">{message.content}</div>
+                      <div className="leading-tight">{message.content}</div>
                     </div>
                   ))}
                   {chatMessages.length === 0 && (
-                    <div className="text-center text-white/50 text-xs py-8">
-                      <MessageCircle className="w-8 h-8 mx-auto mb-3 opacity-60" />
-                      <p className="font-medium tracking-wide">Start a conversation to see messages here</p>
+                    <div className="text-center text-white/30 text-xs py-8">
+                      <MessageCircle className="w-6 h-6 mx-auto mb-2 opacity-40" />
+                      <p className="font-normal tracking-wide">Start conversation to see messages</p>
                     </div>
                   )}
                 </div>
               </ScrollArea>
               
               {conversation.status === "connected" && (
-                <div className="flex gap-3 pt-4 border-t border-white/10">
+                <div className="flex gap-2 pt-3 border-t border-gray-800">
                   <Input
                     placeholder="Type a message..."
                     value={textInput}
                     onChange={(e) => setTextInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendTextMessage()}
                     onInput={() => conversation.sendUserActivity?.()}
-                    className="flex-1 rounded-xl text-xs h-10 bg-slate-800/50 backdrop-blur-sm border-white/10 text-white placeholder:text-white/50 focus:border-blue-400/50 focus:ring-1 focus:ring-blue-400/25 transition-all duration-200"
+                    className="flex-1 rounded-none text-xs h-8 bg-gray-900 border-gray-700 text-white placeholder:text-white/40 focus:border-gray-600 focus:ring-0 transition-all duration-200"
                   />
                   <Button
                     size="icon"
                     onClick={sendTextMessage}
                     disabled={!textInput.trim()}
-                    className="rounded-xl h-10 w-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
+                    className="rounded-none h-8 w-8 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 transition-all duration-200"
                   >
-                    <Send className="h-4 w-4" />
+                    <Send className="h-3 w-3" />
                   </Button>
                 </div>
               )}
               
               {conversation.status !== "connected" && (
-                <div className="pt-4 border-t border-white/10 text-center text-xs text-white/50 font-medium tracking-wide">
+                <div className="pt-3 border-t border-gray-800 text-center text-xs text-white/30 font-normal tracking-wide">
                   Connect to start chatting
                 </div>
               )}
