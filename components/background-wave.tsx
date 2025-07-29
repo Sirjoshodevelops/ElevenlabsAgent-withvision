@@ -140,10 +140,8 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
       ctx.fill();
       
       // Add center pulse effect
-      // Set video properties and force play
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
+      if (isActive) {
+        const pulseRadius = 25 + Math.sin(time * 0.1) * 5;
         ctx.beginPath();
         ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
         ctx.strokeStyle = isSpeaking ? '#3B82F6' : '#6B7280';
@@ -153,22 +151,11 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
         ctx.globalAlpha = 1;
       }
       
-      // Multiple attempts to play the video
-      const playVideo = () => {
-        video.play().catch((error) => {
-          console.log('Video play failed:', error);
-          // Retry after a short delay
-          setTimeout(playVideo, 1000);
-        });
-      };
-      
-      if (video.readyState >= 3) {
-        playVideo();
-      } else {
-        video.addEventListener('canplay', playVideo, { once: true });
-      }
-      
-      video.addEventListener('loadeddata', playVideo, { once: true });
+      time += 1;
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
 
     return () => {
       if (animationRef.current) {
@@ -180,9 +167,13 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <canvas
-        filter: 'brightness(0.4) contrast(1.1) saturate(0.8)',
-        pointerEvents: 'none',
+        ref={canvasRef}
+        style={{
+          filter: 'brightness(0.4) contrast(1.1) saturate(0.8)',
+          pointerEvents: 'none'
+        }}
         className="w-full h-full"
+      />
     </div>
   );
 }
