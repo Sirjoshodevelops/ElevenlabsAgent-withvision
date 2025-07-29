@@ -19,17 +19,6 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             disableTransitionOnChange
         >
             <div className="flex flex-col flex-grow w-full items-center justify-center px-2 bg-transparent min-h-screen">
-                <nav className="fixed w-full top-0 left-0 flex justify-between items-center py-2 px-4 z-20 bg-black/20 backdrop-blur-sm">
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
-                            Voice AI Assistant
-                        </h1>
-                    </div>
-
-                    <div className="flex gap-2 justify-end">
-                        <ThemeToggle />
-                    </div>
-                </nav>
                 <div className="relative z-10 bg-transparent w-full h-screen flex items-center justify-center">
                     {children}
                 </div>
