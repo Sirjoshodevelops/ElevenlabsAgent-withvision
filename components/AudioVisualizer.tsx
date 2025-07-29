@@ -96,16 +96,31 @@ export function AudioVisualizer({ isActive, isSpeaking, inputVolume = 0, outputV
         
         // Set color based on state
         let color = '#374151'; // Gray for inactive
-        if (isSpeaking) {
-          color = '#3B82F6'; // Blue for speaking
-        } else if (isActive) {
-          color = '#6B7280'; // Light gray for active
-        }
+        let centerColor = '#374151';
         
-        // Add intensity-based color variation
-        const intensity = Math.min(1, barHeight / 40);
-        if (intensity > 0.5) {
-          color = isSpeaking ? '#1D4ED8' : '#4B5563';
+        if (isSpeaking) {
+          // Dynamic colors based on output volume when agent is speaking
+          const intensity = Math.min(1, outputVolume * 3);
+          if (intensity > 0.7) {
+            color = '#8B5CF6'; // Purple for high activity
+            centerColor = '#8B5CF6';
+          } else if (intensity > 0.4) {
+            color = '#3B82F6'; // Blue for medium activity
+            centerColor = '#3B82F6';
+          } else {
+            color = '#06B6D4'; // Cyan for low activity
+            centerColor = '#06B6D4';
+          }
+        } else if (isActive) {
+          // Subtle color when listening (based on input volume)
+          const inputIntensity = Math.min(1, inputVolume * 2);
+          if (inputIntensity > 0.3) {
+            color = '#10B981'; // Green when user is speaking
+            centerColor = '#10B981';
+          } else {
+            color = '#6B7280'; // Light gray for active listening
+            centerColor = '#6B7280';
+          }
         }
         
         // Draw bar
